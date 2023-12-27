@@ -3,10 +3,7 @@ package agh.ics.oop.model;
 import agh.ics.oop.OptionsParser;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -15,7 +12,7 @@ public class AbstractWorldMapTest {
 
     @Test
     public void getOrderedAnimalsTest() throws PositionAlreadyOccupiedException {
-        WorldMap map = new StandardMap();
+        WorldMap map = new StandardMap(10, 10, 11, 2, new HashMap<>(), UUID.randomUUID());
         List<Vector2d> positions = List.of(new Vector2d(3,4), new Vector2d(2,2), new Vector2d(0,0));
         for (int i = 0; i < positions.size(); i++) {
             map.place(new Animal(positions.get(i),MapDirection.NORTH, 0,0),false);

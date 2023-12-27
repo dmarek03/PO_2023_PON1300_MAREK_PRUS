@@ -1,8 +1,9 @@
 package agh.ics.oop.model;
 
+import com.google.common.base.Optional;
+
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -44,7 +45,7 @@ public interface WorldMap extends MoveValidator {
      * @param position The position of the animal.
      * @return animal or null if the position is not occupied.
      */
-    Optional<WorldElement> objectAt(Vector2d position);
+    Optional<List<WorldElement>> objectAt(Vector2d position);
 
     Map<Vector2d, WorldElement> getElements();
 
@@ -53,7 +54,7 @@ public interface WorldMap extends MoveValidator {
     public UUID getId();
 
     public List<Animal> getAnimals();
-    public Map<Vector2d,WorldElement> getGrasses();
+    public List<Grass> getGrasses();
 
     public List<Animal> getOrderedAnimals();
 

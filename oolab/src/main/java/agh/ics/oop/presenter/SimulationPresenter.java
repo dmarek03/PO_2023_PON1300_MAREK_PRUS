@@ -106,8 +106,8 @@ public class SimulationPresenter implements MapChangeListener {
             for (int i = lowerleft.getX(); i < upperright.getX(); i++) {
                 for (int j = lowerleft.getY(); j < upperright.getY(); j++) {
                     Vector2d position = new Vector2d(i, j);
-                    Optional optElement = map.objectAt(position);
-                    if (optElement == Optional.empty()) {continue;}
+                    com.google.common.base.Optional<List<WorldElement>> optElement = map.objectAt(position);
+                    //if (Optional.empty() == optElement) {continue;}
                     WorldElement element = (WorldElement) optElement.get();
 
                     Grass grassAt = (Grass) map.getGrasses().get(position);

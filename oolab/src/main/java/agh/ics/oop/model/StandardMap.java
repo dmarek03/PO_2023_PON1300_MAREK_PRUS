@@ -1,8 +1,10 @@
 package agh.ics.oop.model;
 
 import agh.ics.oop.MapVisualizer;
+import com.google.common.base.Optional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class StandardMap implements WorldMap{
     private final int width;
@@ -11,7 +13,7 @@ public class StandardMap implements WorldMap{
     private final List<Animal> animals = new ArrayList<>();
     private final List<Grass> grasses;
     private final Map<Vector2d,Double> fertilized;
-    private int grassEnergy;
+    private final int grassEnergy;
     private final List<MapChangeListener> observers = new ArrayList<>();
 
     private final UUID id;
@@ -19,10 +21,11 @@ public class StandardMap implements WorldMap{
     private final Vector2d lowerLeftLimit;
     private final Vector2d upperRightLimit ;
 
-    public StandardMap(int width, int height, int grassNumber, Map<Vector2d,Double> fertilized, UUID id){
+    public StandardMap(int width, int height, int grassNumber,int grassEnergy, Map<Vector2d,Double> fertilized, UUID id){
         this.width = width;
         this.height = height;
         this.grassNumber = grassNumber;
+        this.grassEnergy = grassEnergy;
         this.fertilized = fertilized;
         this.id =id;
         this.lowerLeftLimit = new Vector2d(0, 0);
@@ -54,7 +57,7 @@ public class StandardMap implements WorldMap{
 
 
     }
-
+    // to jak zrobisz RandomPositionGenerator to trzeba zmienić
     public ArrayList<Grass> placeGrass(){
         RandomPositionGenerator randomPositionGenerator = new RandomPositionGenerator(width, height, grassNumber, fertilized);
         ArrayList<Grass> grasses1 = new ArrayList<>();
@@ -110,24 +113,32 @@ public class StandardMap implements WorldMap{
         }
         return false;
     }
-
+    // Zmieniłem objectAt tak,że zwraca teraz listę zwierząt na danej pozycji,albo traw jeśli nie ma zwierząt
+    // a jeśli dana pozycja jest pusta to zwraca null
     @Override
-    public Optional<WorldElement> objectAt(Vector2d position) {
+    public Optional<List<WorldElement>> objectAt(Vector2d position) {
+        List<WorldElement> animalsAtPosition = new  ArrayList<>();
+        List<WorldElement>  grassesAtPosition = new ArrayList<>();
         if(isOccupied(position)){
             for(Animal a : animals){
                 if (a.getPosition().equals(position)){
-                    return Optional.of(a);
+                    animalsAtPosition.add(a);
+
                 }
             }
         }else if(isOccupiedByGrass(position)){
             for(Grass g : grasses){
                 if(g.getPosition().equals(position)){
-                    return Optional.of(g);
+                    grassesAtPosition.add(g);
+
                 }
             }
         }
 
-        return null;
+        if(!animalsAtPosition.isEmpty()) {return (Optional<List<WorldElement>>) animalsAtPosition;}
+        if(!grassesAtPosition.isEmpty()) {return (Optional<List<WorldElement>>) grassesAtPosition;}
+
+        return Optional.absent();
     }
 
     @Override
@@ -180,15 +191,17 @@ public class StandardMap implements WorldMap{
     public UUID getId() {
         return id;
     }
-
+    // tutaj jest problem dlatego, że AbstractWorldMap oczekuje tutaj Hashmapy ale jak nie będziemy tej klasy używać to lepiej zostawić tak
     @Override
     public List<Animal> getAnimals() {return this.animals;}
 
+    // to samo co wyżej
     @Override
-    public Map<Vector2d, WorldElement> getGrasses() {
-        return null;
+    public List<Grass> getGrasses() {
+        return this.grasses;
     }
 
+    // tutaj to pytanie jaki chcesz mieć porządek zwracania czy taki jak w Competition czy po pozycjach
     @Override
     public List<Animal> getOrderedAnimals() {
         return null;

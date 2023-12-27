@@ -6,7 +6,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public abstract class AbstractWorldMap implements WorldMap<WorldElement, Vector2d> {
+public abstract class AbstractWorldMap implements WorldMap {
     public int height;
     public int width;
 
@@ -49,7 +49,7 @@ public abstract class AbstractWorldMap implements WorldMap<WorldElement, Vector2
         return ((!isGrass(element)) && (!element.equals(null)));
     }
 
-    public void mapChanged(String event) {
+    public void notifyObservers(String event) {
         for (MapChangeListener observer : observers) {
             observer.mapChanged((WorldMap) this,event);
         }
@@ -68,12 +68,12 @@ public abstract class AbstractWorldMap implements WorldMap<WorldElement, Vector2
     }
 
 
-    public void move(WorldElement object, MoveDirection direction) {
+    public void move(WorldElement object, int direction) {
         if (!isAnimal(Optional.ofNullable(object))) {return;}
         Vector2d startPosition = (Vector2d) object.getPosition();
         if (!objectAt(startPosition).equals(Optional.ofNullable(object))) {return;}
         animals.remove(startPosition);
-        object.move((MoveValidator) this,direction);
+        object.move(direction, (MoveValidator) this);
         animals.put((Vector2d) object.getPosition(),object);
         mapChanged("Animal " + object + " moved from " + startPosition + " to " + object.getPosition());
     }

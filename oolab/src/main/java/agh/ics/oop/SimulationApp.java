@@ -24,7 +24,7 @@ public class SimulationApp extends Application {
         String[] args = getParameters().getRaw().toArray(new String[10]);
         List<MoveDirection> directions = OptionsParser.parse(args);
         List<Vector2d> positions = List.of(new Vector2d(2,2), new Vector2d(3,4));
-        AbstractWorldMap map = new GrassField(5);
+        AbstractWorldMap map = new StandardMap();
 
         ConsoleMapDisplay observer = new ConsoleMapDisplay();
         map.registerObserver(observer);
@@ -39,7 +39,7 @@ public class SimulationApp extends Application {
         map.registerObserver(presenter);
         presenter.setWorldMap((WorldMap) map);
         System.out.println(map);
-        Simulation simulation = new Simulation(directions, positions, (WorldMap<WorldElement, Vector2d>) map);
+        Simulation simulation = new Simulation(directions, positions, (WorldMap) map);
 
         configureStage(primaryStage,viewRoot);
 

@@ -158,50 +158,50 @@ public class SimulationPresenter implements MapChangeListener {
 
         (new Thread(() -> {(new Simulation(directions, map)).run();})).start();
 
-        if ((extra) && (count % 2 == 0)) {
-
-            Stage newStage = new Stage();
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getClassLoader().getResource("simulation.fxml"));
-            BorderPane viewRoot = loader.load();
-            SimulationPresenter presenter = loader.getController();
-            presenter.extra = true;
-
-            configureStage(newStage, viewRoot);
-
-
-            AbstractWorldMap newMap;
-            if (map instanceof GrassField) {
-                int numOfGrasses = map.getGrasses().size();
-                newMap = new GrassField(numOfGrasses, false);
-                Map<Vector2d, WorldElement> newGrasses = new HashMap<>();
-                map.getGrasses().keySet().forEach(key -> {
-                    newGrasses.put((Vector2d) key,new Grass((Vector2d) key));
-                });
-                newMap.setGrasses(newGrasses);
-            } else {
-                Boundary bound = map.getCurrentBounds();
-                newMap = new RectangularMap(bound.upperright().getX() + 1,bound.upperright().getY() + 1);
-            }
-            Map<Vector2d, WorldElement> newAnimals = new HashMap<>();
-            map.getAnimals().keySet().forEach(key -> {
-                newAnimals.put((Vector2d) key,new Animal((Vector2d) key));
-            });
-            newMap.setAnimals(newAnimals);
-
-            newMap.registerObserver(presenter);
-
-            presenter.setWorldMap((WorldMap) newMap);
-
-
-            List<MoveDirection> newDirections = OptionsParser.parse(" ".split(" "));
-            new Thread(() -> {
-                new Simulation(newDirections, (WorldMap<WorldElement, Vector2d>) newMap).run();
-                Platform.runLater(() -> {
-                    newStage.show();
-                });
-            }).start();
-        }
+//        if ((extra) && (count % 2 == 0)) {
+//
+//            Stage newStage = new Stage();
+//            FXMLLoader loader = new FXMLLoader();
+//            loader.setLocation(getClass().getClassLoader().getResource("simulation.fxml"));
+//            BorderPane viewRoot = loader.load();
+//            SimulationPresenter presenter = loader.getController();
+//            presenter.extra = true;
+//
+//            configureStage(newStage, viewRoot);
+//
+//
+//            AbstractWorldMap newMap;
+//            if (map instanceof GrassField) {
+//                int numOfGrasses = map.getGrasses().size();
+//                newMap = new GrassField(numOfGrasses, false);
+//                Map<Vector2d, WorldElement> newGrasses = new HashMap<>();
+//                map.getGrasses().keySet().forEach(key -> {
+//                    newGrasses.put((Vector2d) key,new Grass((Vector2d) key));
+//                });
+//                newMap.setGrasses(newGrasses);
+//            } else {
+//                Boundary bound = map.getCurrentBounds();
+//                newMap = new RectangularMap(bound.upperright().getX() + 1,bound.upperright().getY() + 1);
+//            }
+//            Map<Vector2d, WorldElement> newAnimals = new HashMap<>();
+//            map.getAnimals().keySet().forEach(key -> {
+//                newAnimals.put((Vector2d) key,new Animal((Vector2d) key));
+//            });
+//            newMap.setAnimals(newAnimals);
+//
+//            newMap.registerObserver(presenter);
+//
+//            presenter.setWorldMap((WorldMap) newMap);
+//
+//
+//            List<MoveDirection> newDirections = OptionsParser.parse(" ".split(" "));
+//            new Thread(() -> {
+//                new Simulation(newDirections, (WorldMap<WorldElement, Vector2d>) newMap).run();
+//                Platform.runLater(() -> {
+//                    newStage.show();
+//                });
+//            }).start();
+//        }
 
 
     }

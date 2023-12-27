@@ -1,11 +1,14 @@
 package agh.ics.oop.model;
 
-public class Grass implements WorldElement<Vector2d> {
+public class Grass implements WorldElement {
 
     public Vector2d position;
+    private final int grassEnergy;
 
-    public Grass(Vector2d startLocation) {
-        this.position = startLocation;
+    public Grass(Vector2d position, int energy){
+        this.position = position;
+
+        this.grassEnergy = energy;
     }
 
     public Vector2d getPosition() {
@@ -17,7 +20,7 @@ public class Grass implements WorldElement<Vector2d> {
     }
 
     @Override
-    public void move(MoveValidator validator, MoveDirection direction) {return;}
+    public void move(int direction, MoveValidator validator) {return;}
 
     public String toString() {
         return "*";

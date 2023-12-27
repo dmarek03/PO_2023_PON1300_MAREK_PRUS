@@ -30,9 +30,9 @@ public class Simulation implements Runnable {
         this.moves = moves;
         List<Animal> all = new ArrayList<>();
         positions.forEach(position -> {
-            Animal animal = new Animal(position);
+            Animal animal = new Animal(position,MapDirection.NORTH,100,8);
             try {
-                if (map.place(animal, position,true)) {
+                if (map.place(animal,true)) {
                     all.add(animal);
                 }
             } catch (PositionAlreadyOccupiedException e) {
@@ -43,13 +43,13 @@ public class Simulation implements Runnable {
         this.map = map;
     }
 
-    public Simulation(List<MoveDirection> moves,List<Vector2d> positions, WorldMap<WorldElement , Vector2d> map, boolean placeInform) {
+    public Simulation(List<MoveDirection> moves,List<Vector2d> positions, WorldMap map, boolean placeInform) {
         this.moves = moves;
         List<Animal> all = new ArrayList<>();
         positions.forEach(position -> {
-            Animal animal = new Animal(position);
+            Animal animal = new Animal(position,MapDirection.NORTH,100,8);
             try {
-                if (map.place(animal, position,placeInform)) {
+                if (map.place(animal,placeInform)) {
                     all.add(animal);
                 }
             } catch (PositionAlreadyOccupiedException e) {
@@ -68,7 +68,7 @@ public class Simulation implements Runnable {
         for (int i = 0; i < getNoMoves(); i++) {
             int animalInd = (i % allAnimals);
             Animal currAnimal = animals.get(animalInd);
-            map.move(currAnimal,this.moves.get(i));
+            map.move(currAnimal, this.moves.get(i).ordinal());
             animals.set(animalInd,currAnimal);
             if (wait) {
                 try {

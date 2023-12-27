@@ -15,13 +15,13 @@ public class AbstractWorldMapTest {
 
     @Test
     public void getOrderedAnimalsTest() throws PositionAlreadyOccupiedException {
-        WorldMap map = new RectangularMap(5,5);
+        WorldMap map = new StandardMap();
         List<Vector2d> positions = List.of(new Vector2d(3,4), new Vector2d(2,2), new Vector2d(0,0));
         for (int i = 0; i < positions.size(); i++) {
-            map.place(new Animal(positions.get(i)),positions.get(i),false);
+            map.place(new Animal(positions.get(i),MapDirection.NORTH, 0,0),false);
         }
 
-        List<Animal> expectedResult = List.of(new Animal(new Vector2d(0,0)), new Animal(new Vector2d(2,2)), new Animal(new Vector2d(3,4)));
+        List<Animal> expectedResult = List.of(new Animal(new Vector2d(0, 0),MapDirection.NORTH, 0,0), new Animal(new Vector2d(2, 2),MapDirection.NORTH, 0,0), new Animal(new Vector2d(3, 4),MapDirection.NORTH, 0,0));
 
         List<Animal> result = map.getOrderedAnimals();
 

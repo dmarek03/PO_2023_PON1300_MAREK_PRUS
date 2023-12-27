@@ -89,7 +89,7 @@ public abstract class AbstractWorldMap implements WorldMap {
         return ((animals.get(position) != null) || (grasses.get(position) != null));
     }
 
-    public Optional<WorldElement> objectAt(Vector2d position) {
+    public com.google.common.base.Optional<List<WorldElement>> objectAt(Vector2d position) {
         if (animals.get(position) != null) {return Optional.ofNullable(animals.get(position));}
         else if (grasses.get(position) != null) {return Optional.ofNullable(grasses.get(position));}
         else {return Optional.empty();}

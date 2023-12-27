@@ -78,7 +78,7 @@ public class MapVisualizer {
 
     private String drawObject(Vector2d currentPosition) {
         if (this.map.isOccupied(currentPosition)) {
-            Optional optElement = this.map.objectAt(currentPosition);
+            Optional optElement = this.map.objectAt(currentPosition).toJavaUtil();
             WorldElement object = (WorldElement) optElement.get();
             if (object != null) {
                 return object.toString();

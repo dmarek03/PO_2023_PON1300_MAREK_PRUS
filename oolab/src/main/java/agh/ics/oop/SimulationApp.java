@@ -13,7 +13,9 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -24,10 +26,10 @@ public class SimulationApp extends Application {
         String[] args = getParameters().getRaw().toArray(new String[10]);
         List<MoveDirection> directions = OptionsParser.parse(args);
         List<Vector2d> positions = List.of(new Vector2d(2,2), new Vector2d(3,4));
-        AbstractWorldMap map = new StandardMap();
+        StandardMap map = new StandardMap(10,10, 11, 2, new HashMap<>(), UUID.randomUUID());
 
         ConsoleMapDisplay observer = new ConsoleMapDisplay();
-        map.registerObserver(observer);
+        map.addObserver(observer);
 
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getClassLoader().getResource("simulation.fxml"));
@@ -36,7 +38,7 @@ public class SimulationApp extends Application {
 
         presenter.extra = false;
 
-        map.registerObserver(presenter);
+        map.addObserver(observer);
         presenter.setWorldMap((WorldMap) map);
         System.out.println(map);
         Simulation simulation = new Simulation(directions, positions, (WorldMap) map);

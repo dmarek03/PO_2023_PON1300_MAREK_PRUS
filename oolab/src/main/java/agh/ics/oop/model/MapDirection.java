@@ -2,39 +2,57 @@ package agh.ics.oop.model;
 
 public enum MapDirection {
     NORTH,
+    NORTHEAST,
     EAST,
+    SOUTHEAST,
     SOUTH,
-    WEST;
+    SOUTHWEST,
+    WEST,
+    NORTHWEST;
 
-    public String toString(MapDirection input) {
-        switch (input) {
-            case NORTH -> {return "Północ";}
-            case SOUTH -> {return "Południe";}
-            case EAST -> {return "Wschód";}
-            case WEST -> {return "Zachód";}
-            default -> {return "";}
+    public String toString(){
+        return switch(this) {
+            case NORTH -> "N";
+            case NORTHEAST -> "NE";
+            case EAST -> "E";
+            case SOUTHEAST -> "SE";
+            case SOUTH -> "S";
+            case SOUTHWEST -> "SW";
+            case WEST -> "W";
+            case NORTHWEST -> "NW";
+        };
+
+    }
+
+
+    public MapDirection next(){
+        return values()[(this.ordinal()+1) % 8];
+    }
+
+    public MapDirection previous(){
+        if(this.ordinal() -1 < 0){
+            return values()[7];
         }
+        return values()[(this.ordinal()-1)%8];
     }
 
-    public static MapDirection next(MapDirection input) {
-        return MapDirection.values()[((input.ordinal() + 1) % 4)];
+    public MapDirection changeOrientation(int x){
+        return values()[(this.ordinal()+x) % 8];
     }
 
-    public static MapDirection previous(MapDirection input) {
-        return MapDirection.values()[((input.ordinal() + 3) % 4)];
+    public MapDirection opposite() {return values()[(this.ordinal() + 4) % 8];}
+
+    public Vector2d toUnitVector(){
+        return switch (this){
+            case NORTH -> new Vector2d(0,1);
+            case NORTHEAST -> new Vector2d(1,1);
+            case EAST -> new Vector2d(1,0);
+            case SOUTHEAST -> new Vector2d(1,-1);
+            case SOUTH -> new Vector2d(0,-1);
+            case SOUTHWEST -> new Vector2d(-1,-1);
+            case WEST -> new Vector2d(-1,0);
+            case NORTHWEST -> new Vector2d(-1,1);
+        };
+
     }
-
-    public static Vector2d unitVector(MapDirection input) {
-        int a = 0;
-        int b = 1;
-        for (int i = 0; i < input.ordinal(); i++) {
-            int temp = a;
-            a = b;
-            b = -temp;
-        }
-        return new Vector2d(a,b);
-    }
-
-
-
 }

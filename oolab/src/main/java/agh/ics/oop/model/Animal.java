@@ -50,17 +50,8 @@ public class Animal implements WorldElement {
     }
 
     public String orientationToString(){
-        return switch (this.currentOrientation){
-            case NORTH -> "N";
-            case SOUTH -> "S";
-            case WEST -> "W";
-            case EAST -> "E";
-            case NORTHWEST -> "NW";
-            case SOUTHWEST -> "SW";
-            case NORTHEAST -> "NE";
-            case SOUTHEAST -> "SE";
+        return this.currentOrientation.toString();
 
-        };
 
     }
     // The method will be used in class GlobalMap to add energy to animalEnergy when it ate the grass
@@ -132,7 +123,7 @@ public class Animal implements WorldElement {
 
     @Override
     public String toString(){
-        return AnimalToString1();
+        return AnimalToString();
     }
 
 

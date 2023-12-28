@@ -9,16 +9,17 @@ public enum MapDirection {
     SOUTHWEST,
     WEST,
     NORTHWEST;
+
     public String toString(){
         return switch(this) {
-            case NORTH -> "Północ";
-            case NORTHEAST -> "Północny-wschoód";
-            case EAST -> "Wschód";
-            case SOUTHEAST -> "Południowy-wschód";
-            case SOUTH -> "Południe";
-            case SOUTHWEST -> "Południowy-zachód";
-            case WEST -> "Zachód";
-            case NORTHWEST -> "Północny-zachód";
+            case NORTH -> "N";
+            case NORTHEAST -> "NE";
+            case EAST -> "E";
+            case SOUTHEAST -> "SE";
+            case SOUTH -> "S";
+            case SOUTHWEST -> "SW";
+            case WEST -> "W";
+            case NORTHWEST -> "NW";
         };
 
     }
@@ -38,6 +39,8 @@ public enum MapDirection {
     public MapDirection changeOrientation(int x){
         return values()[(this.ordinal()+x) % 8];
     }
+
+    public MapDirection opposite() {return values()[(this.ordinal() + 4) % 8];}
 
     public Vector2d toUnitVector(){
         return switch (this){

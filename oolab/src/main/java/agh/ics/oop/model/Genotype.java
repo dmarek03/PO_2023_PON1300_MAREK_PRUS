@@ -5,19 +5,19 @@ import java.util.Random;
 
 public class Genotype {
 
-    private final ArrayList<Integer> genes;
+    public ArrayList<Integer> genes;
     private final int genesRange;
 
     private final int numberOfGenes;
 
-    Genotype(int genesRange, int numberOfGenes){
+    public Genotype(int genesRange, int numberOfGenes){
 
         this.genesRange = genesRange;
         this.numberOfGenes = numberOfGenes;
         genes = getRandomGenotype();
     }
 
-    Genotype(int genesRange, int numberOfGenes,ArrayList<Integer> newGenes){
+    public Genotype(int genesRange, int numberOfGenes,ArrayList<Integer> newGenes){
         this.genesRange = genesRange;
         this.numberOfGenes = numberOfGenes;
         this.genes = newGenes;
@@ -70,7 +70,7 @@ public class Genotype {
         return genesRange;
     }
 
-    public  ArrayList<Integer> getGenes(){
+    public ArrayList<Integer> getGenes(){
         return genes;
     }
 

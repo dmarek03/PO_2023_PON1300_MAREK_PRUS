@@ -5,6 +5,7 @@ import agh.ics.oop.model.WorldElement;
 import agh.ics.oop.model.WorldMap;
 
 import java.util.Optional;
+import java.util.List;
 
 /**
  * The map visualizer converts the {@link WorldMap} map into a string
@@ -78,9 +79,9 @@ public class MapVisualizer {
 
     private String drawObject(Vector2d currentPosition) {
         if (this.map.isOccupied(currentPosition)) {
-            Optional optElement = this.map.objectAt(currentPosition).toJavaUtil();
-            WorldElement object = (WorldElement) optElement.get();
-            if (object != null) {
+            List<WorldElement> objectList = this.map.objectAt(currentPosition);
+            if (objectList != null) {
+                WorldElement object = objectList.get(0);
                 return object.toString();
             }
         }

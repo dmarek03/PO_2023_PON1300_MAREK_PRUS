@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class World {
 
@@ -50,6 +51,23 @@ public class World {
 //        SimulationEngine SE = new SimulationEngine(simulations);
 //        SE.runAsyncInThreadPool();
 
+        List<Vector2d> positions = List.of(new Vector2d(2,2), new Vector2d(3,4));
+        WorldMap map = new StandardMap(5,5,2,100, UUID.randomUUID(),0.8);
+
+        map.addObserver(new ConsoleMapDisplay());
+
+        System.out.println(map);
+        System.out.println(map.getGrasses());
+        System.out.println(map.getAnimals());
+        System.out.println();
+        Simulation simulation = new Simulation(map,positions,8);
+        simulation.run();
+
+//        for (int i = 0; i < 5; i++) {
+//            for (int j = 0; j < 5; j++) {
+//                System.out.println(map.isOccupied(new Vector2d(i,j)));
+//            }
+//        }
 
         System.out.println("\nSystem zakończył działanie");
 

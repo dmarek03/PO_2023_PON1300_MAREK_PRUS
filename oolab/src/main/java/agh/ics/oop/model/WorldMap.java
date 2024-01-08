@@ -2,6 +2,7 @@ package agh.ics.oop.model;
 
 import com.google.common.base.Optional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -21,7 +22,7 @@ public interface WorldMap extends MoveValidator {
      * @param animal The animal to place on the map.
      * @return True if the animal was placed. The animal cannot be placed if the move is not valid.
      */
-    boolean place(Animal object, boolean inform) throws PositionAlreadyOccupiedException;
+    boolean place(Animal object, boolean inform);
 
     /**
      * Moves an animal (if it is present on the map) according to specified direction.
@@ -65,5 +66,21 @@ public interface WorldMap extends MoveValidator {
     void mapChanged(String message);
 
     void notifyObservers(String message);
+
+    int getWidth();
+
+    int getHeight();
+
+    boolean isOccupiedByGrass(Vector2d position);
+
+    void setGrasses(List<Grass> newGrasses);
+
+    void removeGrass(Grass grass);
+
+    void addToFertilized(Vector2d pos);
+
+    void removeFromFertilized(Vector2d pos);
+
+    ArrayList<Grass> updateGrass();
 
 }

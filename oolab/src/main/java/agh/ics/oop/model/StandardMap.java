@@ -12,9 +12,11 @@ public class StandardMap implements WorldMap{
     private int grassNumber;
     private List<Animal> animals = new ArrayList<>();
     private List<Grass> grasses;
-    private List<Vector2d> fertilized = new ArrayList<>();
+    public List<Vector2d> fertilized = new ArrayList<>();
     private int grassEnergy;
     private List<MapChangeListener> observers = new ArrayList<>();
+
+    private int userGrass;
 
     private final UUID id;
 
@@ -23,13 +25,14 @@ public class StandardMap implements WorldMap{
     private final Vector2d lowerLeftLimit;
     private final Vector2d upperRightLimit ;
 
-    public StandardMap(int width, int height, int grassNumber,int grassEnergy, UUID id,double size){
+    public StandardMap(int width, int height, int grassNumber,int grassEnergy, UUID id,double size, int userGrass){
         this.width = width;
         this.height = height;
         this.grassNumber = grassNumber;
         this.grassEnergy = grassEnergy;
         this.id = id;
         this.size = size;
+        this.userGrass = userGrass;
         this.lowerLeftLimit = new Vector2d(0, 0);
         this.upperRightLimit = new Vector2d(width-1, height-1);
         this.grasses = placeGrass();
@@ -42,22 +45,24 @@ public class StandardMap implements WorldMap{
         return lowerLeftLimit.precedes(position) && upperRightLimit.follows(position);
     }
 
+
+
     @Override
-    public boolean place(Animal animal, boolean inform) throws PositionAlreadyOccupiedException {
-        try{
-            if(canMoveTo(animal.getPosition())){
-                animals.add(animal);
-                return true;
-            }else {
-                throw new PositionAlreadyOccupiedException(animal.getPosition());
-            }
-        } catch (PositionAlreadyOccupiedException e) {
-            System.err.println(e.getMessage());
+    public boolean place(Animal animal, boolean inform) {
+        if(canMoveTo(animal.getPosition())){
+            animals.add(animal);
+            mapChanged("Animal placed at %s".formatted(animal.getPosition()));
+
+            return true;
+        } else {
+            mapChanged("Animal not able to be placed at %s".formatted(animal.getPosition()));
             return false;
         }
 
 
     }
+
+
     // to jak zrobisz RandomPositionGenerator to trzeba zmienić
 
     // pa ->
@@ -74,12 +79,11 @@ public class StandardMap implements WorldMap{
 
     }
 
-    public ArrayList<Grass> updateGrass(){
-        RandomPositionGenerator randomPositionGenerator = new RandomPositionGenerator(width, height, grasses, fertilized, size);
+    public ArrayList<Grass> updateGrass() {
+        RandomPositionGenerator randomPositionGenerator = new RandomPositionGenerator(width, height, grasses, fertilized, userGrass, size);
         ArrayList<Grass> grasses1 = new ArrayList<>();
         for(Object grassPosition : randomPositionGenerator) {
             grasses1.add(new Grass((Vector2d) grassPosition, grassEnergy));
-
         }
         return grasses1;
     }
@@ -88,25 +92,32 @@ public class StandardMap implements WorldMap{
     public void move(Animal animal, int direction) {
         Vector2d newPosition = animal.calculateNextPosition(direction);
         MapDirection oldOrientation = animal.getOrientation();
-        if (newPosition.getY() == height | newPosition.getY() < 0){
+
+        System.out.println("CURRENT POSITION " + animal.getPosition());
+        System.out.println("NEW POSITION " + newPosition);
+
+        Vector2d previousPosition = animal.getPosition();
+
+        animal.changeEnergy(-1);
+
+        if (newPosition.getY() == height | newPosition.getY() < 0) {
             animals.remove(animal);
             animal.changeOrientation(oldOrientation.changeOrientation(4));
             animals.add(animal);
-            mapChanged("Animal moved from %s to %s in direction %s".formatted(newPosition,animal.getPosition(), animal.orientationToString()));
-
+            mapChanged("Animal moved from %s to %s in direction %s".formatted(previousPosition,animal.getPosition(), animal.orientationToString()));
         }
-        if(newPosition.getX() == width | newPosition.getX() < 0){
+        else if(newPosition.getX() == width | newPosition.getX() < 0){
             animals.remove(animal);
             int newX = newPosition.getX();
             if (newX == -1) {newX = width-1;}
             animal.setPosition(new Vector2d(newX % getWidth(), newPosition.getY()));
             animals.add(animal);
-            mapChanged("Animal moved from %s to %s in direction %s".formatted(newPosition,animal.getPosition(), animal.orientationToString()));
+            mapChanged("Animal moved from %s to %s in direction %s".formatted(previousPosition,animal.getPosition(), animal.orientationToString()));
         }else {
             animals.remove(animal);
             animal.move(direction, this);
             animals.add(animal);
-            mapChanged("Animal moved from %s to %s in direction %s".formatted(newPosition, animal.getPosition(), animal.orientationToString()));
+            mapChanged("Animal moved from %s to %s in direction %s".formatted(previousPosition, animal.getPosition(), animal.orientationToString()));
         }
 
     }
@@ -232,9 +243,18 @@ public class StandardMap implements WorldMap{
 //        return null;
 //    }
     // coś w tym stylu
-    @Override
+
+
     public List<Animal> getOrderedAnimals() {
-        return null;
+        this.getAnimals().sort(
+                Comparator.comparing(Animal::getXPosition)
+                        .thenComparing(Animal::getYPosition)
+                        .thenComparing(Animal::getAnimalEnergy)
+                        .thenComparing(Animal::getAge)
+                        .thenComparing(Animal::getChildren)
+//                        .reversed()
+        );
+        return this.getAnimals();
     }
 
     public int getWidth() {
@@ -243,6 +263,15 @@ public class StandardMap implements WorldMap{
 
     public int getHeight() {
         return height;
+    }
+
+    public void setGrasses(List<Grass> newGrasses) {
+        this.grasses = newGrasses;
+    }
+
+    public void removeGrass(Grass grass) {
+        System.out.println("Grass " + grass + " deleted from " + grass.getPosition());
+        this.grasses.remove(grass);
     }
 
     public Vector2d getLowerLeftLimit() {
@@ -255,5 +284,13 @@ public class StandardMap implements WorldMap{
 
     public int getGrassNumber() {
         return grassNumber;
+    }
+
+    public void addToFertilized(Vector2d pos) {
+        this.fertilized.add(pos);
+    }
+
+    public void removeFromFertilized(Vector2d pos) {
+        this.fertilized.remove(pos);
     }
 }

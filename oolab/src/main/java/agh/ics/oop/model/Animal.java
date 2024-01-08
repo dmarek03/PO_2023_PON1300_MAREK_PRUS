@@ -10,7 +10,7 @@ public class Animal implements WorldElement {
     private Vector2d currentPosition;
     public final double energyToCopulation = 0.3;
     private int animalEnergy;
-    private  int numberOfGenes;
+    public int numberOfGenes;
     private final Genotype genotype;
     private int age;
     private int children = 0;
@@ -21,6 +21,7 @@ public class Animal implements WorldElement {
     public ArrayList<Animal> allChildren = new ArrayList<>();
 
     public ArrayList<Animal> parents;
+
 
     public Animal(){
         this.currentOrientation = MapDirection.NORTH;
@@ -47,6 +48,7 @@ public class Animal implements WorldElement {
         this.animalEnergy = energy;
         this.genotype = genotype;
         this.age = 0;
+        this.numberOfGenes = genotype.getNumberOfGenes();
     }
 
     public String orientationToString(){
@@ -78,14 +80,18 @@ public class Animal implements WorldElement {
 
         Genotype childGenotype = new Genotype(GENES_RANGE, numberOfGenes, childGenes);
         childGenotype.randomMutations();
+        System.out.println("numberOfGenes " + numberOfGenes);
 
         Animal newborn = new Animal(mother.currentPosition, mother.currentOrientation, childEnergy, childGenotype);
 
         this.allChildren.add(newborn);
+        this.children++;
         mother.allChildren.add(newborn);
+        mother.children++;
         newborn.parents = new ArrayList<>();
         newborn.parents.add(this);
         newborn.parents.add(mother);
+
 
         return newborn;
 
@@ -114,10 +120,13 @@ public class Animal implements WorldElement {
         }
         return genes;
     }
-    private String AnimalToString1(){
-        return orientationToString()+" "+animalEnergy+" "+age+" "+children;
+    public String AnimalToString1(){
+        return orientationToString()+" "+animalEnergy+" "+age+" "+children + " " + this.getPosition();
     }
-    private String AnimalToString(){
+    public String AnimalToString(){
+        if (this.isDead()) {
+            return "X";
+        }
         return orientationToString();
     }
 
@@ -192,6 +201,14 @@ public class Animal implements WorldElement {
             case WEST -> "/left.png";
             case NORTHWEST -> "/upLeft.png";
         };
+    }
+
+    public int getXPosition() {
+        return this.getPosition().getX();
+    }
+
+    public int getYPosition() {
+        return this.getPosition().getY();
     }
 
 }

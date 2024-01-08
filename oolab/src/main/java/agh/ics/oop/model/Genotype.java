@@ -17,7 +17,14 @@ public class Genotype {
         genes = getRandomGenotype();
     }
 
-    public Genotype(int genesRange, int numberOfGenes,ArrayList<Integer> newGenes){
+    public Genotype(ArrayList<Integer> newGenes){
+        this.genesRange = 7;
+        this.numberOfGenes = newGenes.size();
+        this.genes = newGenes;
+        System.out.println("Assigned numberOfGenes as " + numberOfGenes + " and should " + newGenes.size());
+    }
+
+    public Genotype(int genesRange, int numberOfGenes, ArrayList<Integer> newGenes){
         this.genesRange = genesRange;
         this.numberOfGenes = numberOfGenes;
         this.genes = newGenes;
@@ -26,7 +33,8 @@ public class Genotype {
     public ArrayList<Integer> getRandomGenotype(){
         ArrayList<Integer> list = new ArrayList<>();
         for(int i =0;i< numberOfGenes;i++){
-            list.add(getRandomNumber(genesRange));
+//            list.add(getRandomNumber(genesRange));
+            list.add((int)(Math.random()*genesRange));
         }
         return list;
     }
@@ -61,8 +69,7 @@ public class Genotype {
     }
 
     private int getRandomNumber(int range){
-        Random random = new Random();
-        return random.nextInt(range);
+        return (int)(Math.random()*range);
 
     }
 

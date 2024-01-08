@@ -8,34 +8,24 @@
 <?import javafx.scene.layout.VBox?>
 
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            minHeight="550.0" minWidth="850.0"
+            minHeight="600" minWidth="900"
             fx:controller="agh.ics.oop.presenter.SimulationPresenter">
 
     <center>
 
-
-
         <VBox spacing="10">
 
+<!--            <Label fx:id="mapLabel" text="All animals will be living here!" textAlignment="CENTER"/>-->
+<!--            <Label fx:id="infoLabel" text="Messages here" textAlignment="CENTER"/>-->
             <GridPane fx:id="mapGrid"  vgap="0" hgap="0" gridLinesVisible="true" alignment="CENTER" />
 
-            <Label fx:id="infoLabel" text="All animals will be living here!" textAlignment="CENTER"/>
-
-            <!-- New controls added below -->
-
-            <HBox spacing="10">
-                <Label text="Move List:"/>
-                <TextField fx:id="moveListTextField" promptText="Enter move list"/>
-            </HBox>
-
-            <HBox spacing="10">
-                <Label text="Move Description:"/>
-                <Label fx:id="moveDescriptionLabel" text=""/>
-            </HBox>
-
-            <Button text="Start" onAction="#onSimulationStartClicked"/>
         </VBox>
     </center>
 </BorderPane>

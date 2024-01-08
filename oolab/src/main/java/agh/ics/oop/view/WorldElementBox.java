@@ -9,24 +9,17 @@ import javafx.scene.text.TextAlignment;
 
 public class WorldElementBox extends VBox {
 
-    private ImageView imageView;
-    private Label positionLabel;
 
-    public WorldElementBox(String imagePath, String positionText) {
+    public WorldElementBox(String imagePath) {
+
         Image image = new Image(getClass().getResourceAsStream(imagePath));
-        imageView = new ImageView(image);
-        imageView.setFitWidth(20);
-        imageView.setFitHeight(20);
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(50);
+        imageView.setFitHeight(50);
 
-        positionLabel = new Label(positionText);
-        positionLabel.setTextAlignment(TextAlignment.CENTER);
-
-        getChildren().addAll(imageView, positionLabel);
+        getChildren().addAll(imageView);
 
         setAlignment(Pos.CENTER);
     }
 
-    public void setPositionText(String positionText) {
-        positionLabel.setText(positionText);
-    }
 }

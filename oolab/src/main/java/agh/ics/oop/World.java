@@ -16,23 +16,23 @@ public class World {
     public static void main(String[] args) {
         System.out.println("System wystartował\n");
 
-        List<Vector2d> positions = List.of(new Vector2d(3,1),new Vector2d(1,3));
-        WorldMap map = new StandardMap(5,5,10,10, UUID.randomUUID(),0.8,1);
-
-        map.addObserver(new ConsoleMapDisplay());
-
-        System.out.println(map);
-        System.out.println(map.getGrasses());
-        System.out.println(map.getAnimals());
-        System.out.println();
-        Simulation simulation = new Simulation(map,positions,8, 0);
-        simulation.run();
-
-//        for (int i = 0; i < 5; i++) {
-//            for (int j = 0; j < 5; j++) {
-//                System.out.println(map.isOccupied(new Vector2d(i,j)));
-//            }
-//        }
+//        List<Vector2d> positions = List.of(new Vector2d(3,1),new Vector2d(1,3));
+//        WorldMap map = new StandardMap(5,5,10,10,0.8,1);
+//
+//        map.addObserver(new ConsoleMapDisplay());
+//
+//        System.out.println(map);
+//        System.out.println(map.getGrasses());
+//        System.out.println(map.getAnimals());
+//        System.out.println();
+//        Simulation simulation = new Simulation(map,positions,8, 0);
+////        simulation.run();
+//        (new Thread(() -> {(simulation).run();})).start();
+////        for (int i = 0; i < 5; i++) {
+////            for (int j = 0; j < 5; j++) {
+////                System.out.println(map.isOccupied(new Vector2d(i,j)));
+////            }
+////        }
 
         System.out.println("\nSystem zakończył działanie");
 

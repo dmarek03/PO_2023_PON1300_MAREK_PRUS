@@ -66,7 +66,7 @@ public class Animal implements WorldElement {
     }
 
     public Animal copulate(Animal mother){
-        System.out.println(numberOfGenes);
+//        System.out.println(numberOfGenes);
         int childEnergy = (int)((energyToCopulation)*(mother.animalEnergy + this.animalEnergy));
         ArrayList<Integer> childGenes;
         if(this.animalEnergy > mother.animalEnergy){
@@ -80,7 +80,7 @@ public class Animal implements WorldElement {
 
         Genotype childGenotype = new Genotype(GENES_RANGE, numberOfGenes, childGenes);
         childGenotype.randomMutations();
-        System.out.println("numberOfGenes " + numberOfGenes);
+//        System.out.println("numberOfGenes " + numberOfGenes);
 
         Animal newborn = new Animal(mother.currentPosition, mother.currentOrientation, childEnergy, childGenotype);
 
@@ -101,10 +101,10 @@ public class Animal implements WorldElement {
         int total_energy = animal1.animalEnergy + animal2.animalEnergy;
         Random random = new Random();
         boolean isRight = 1 == random.nextInt(2);
-        System.out.println(isRight);
+//        System.out.println(isRight);
         ArrayList<Integer> genes = new ArrayList<>();
         int divideIdx = (animal1.animalEnergy*numberOfGenes / total_energy);
-        System.out.println(divideIdx);
+//        System.out.println(divideIdx);
         if (isRight){
             for(int i =0; i < numberOfGenes;i++){
                 if(i <= divideIdx) {
@@ -192,14 +192,14 @@ public class Animal implements WorldElement {
     @Override
     public String path() {
         return switch (this.getOrientation()) {
-            case NORTH -> "/up.png";
-            case NORTHEAST -> "/upRight.png";
-            case EAST -> "/right.png";
-            case SOUTHEAST -> "/downRight.png";
-            case SOUTH -> "/down.png";
-            case SOUTHWEST -> "/downLeft.png";
-            case WEST -> "/left.png";
-            case NORTHWEST -> "/upLeft.png";
+            case NORTH -> "/north.png";
+            case NORTHEAST -> "/northeast.png";
+            case EAST -> "/east.png";
+            case SOUTHEAST -> "/southeast.png";
+            case SOUTH -> "/south.png";
+            case SOUTHWEST -> "/southwest.png";
+            case WEST -> "/west.png";
+            case NORTHWEST -> "/northwest.png";
         };
     }
 

@@ -24,6 +24,20 @@ public enum MapDirection {
 
     }
 
+    public String toLongString(){
+        return switch(this) {
+            case NORTH -> "north";
+            case NORTHEAST -> "northeast";
+            case EAST -> "east";
+            case SOUTHEAST -> "southeast";
+            case SOUTH -> "south";
+            case SOUTHWEST -> "southwest";
+            case WEST -> "west";
+            case NORTHWEST -> "northwest";
+        };
+
+    }
+
 
     public MapDirection next(){
         return values()[(this.ordinal()+1) % 8];

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            minHeight="580" minWidth="500"
+            fx:controller="agh.ics.oop.presenter.SimulationInitializer">
+
+    <center>
+
+        <VBox spacing="10">
+
+            <HBox spacing="10">
+                <Label text="Time of simulation (days):"/>
+                <TextField fx:id="simTimeField" promptText="int"/>
+            </HBox>
+            <HBox spacing="10">
+                <Label text="Map Height:"/>
+                <TextField fx:id="mapHeightField" promptText="int"/>
+            </HBox>
+            <HBox spacing="10">
+                <Label text="Map Width:"/>
+                <TextField fx:id="mapWidthField" promptText="int"/>
+            </HBox>
+            <HBox spacing="10">
+                <Label text="Number of grass fields at start:"/>
+                <TextField fx:id="mapGrassNumberField" promptText="int [0,height*width]"/>
+            </HBox>
+            <HBox spacing="10">
+                <Label text="Energy that every grass is holding:"/>
+                <TextField fx:id="mapGrassEnergyField" promptText="Enter int"/>
+            </HBox>
+            <HBox spacing="15">
+                <Label text="Number of new grass everyday:"/>
+                <TextField fx:id="mapGrassNewField" promptText="int [0,height*width-grass]"/>
+            </HBox>
+            <HBox spacing="10">
+                <Label text="Number animals at the beginning of simulation:"/>
+                <TextField fx:id="mapAnimalNumberField" promptText="int"/>
+            </HBox>
+            <HBox spacing="10">
+                <Label text="Energy that every not-born animal starts their simulation with:"/>
+                <TextField fx:id="mapAnimalEnergyField" promptText="int"/>
+            </HBox>
+            <HBox spacing="10">
+                <Label text="Energy that is required for animals to copulate:"/>
+                <TextField fx:id="mapAnimalCopulateEnergyField" promptText="int"/>
+            </HBox>
+            <HBox spacing="10">
+                <Label text="Percentage of parents energy used to create new animal:"/>
+                <TextField fx:id="mapAnimalCreateEnergyField" promptText="double [0,1)"/>
+            </HBox>
+            <HBox spacing="10">
+                <Label text="Length of every animal genotype:"/>
+                <TextField fx:id="mapAnimalGeneField" promptText="int"/>
+            </HBox>
+
+            <Label fx:id="plantsLabel" text="Choose only one type of plants" textAlignment="CENTER"/>
+            <CheckBox text="Standard"  fx:id="standardPlant"/>
+            <CheckBox text="Lifegiving Corpses"  fx:id="lifegivingCorpses"/>
+
+            <Label fx:id="mutationLabel" text="Choose only one type of mutation" textAlignment="CENTER"/>
+            <CheckBox text="Standard"  fx:id="standardMutation"/>
+            <CheckBox text="Switch"  fx:id="switchMutation"/>
+
+
+
+            <Button text="Start" onAction="#onSimulationStartClicked"/>
+        </VBox>
+    </center>
+</BorderPane>

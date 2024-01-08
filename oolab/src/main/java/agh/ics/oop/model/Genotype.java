@@ -21,7 +21,7 @@ public class Genotype {
         this.genesRange = 7;
         this.numberOfGenes = newGenes.size();
         this.genes = newGenes;
-        System.out.println("Assigned numberOfGenes as " + numberOfGenes + " and should " + newGenes.size());
+//        System.out.println("Assigned numberOfGenes as " + numberOfGenes + " and should " + newGenes.size());
     }
 
     public Genotype(int genesRange, int numberOfGenes, ArrayList<Integer> newGenes){

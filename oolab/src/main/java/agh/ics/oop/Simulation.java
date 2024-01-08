@@ -13,11 +13,20 @@ public class Simulation implements Runnable {
 
     private List<Animal> animals = new ArrayList<>();
 
-    private boolean wait = false;
+    private boolean wait = true;
     private final int time;
 
     private final int reproductionEnergy;
 
+    private void simWait() {
+        if (wait) {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 
     public Simulation(WorldMap map,List<Vector2d> positions, int time, int reproductionEnergy) {
         this.time = time;
@@ -44,6 +53,7 @@ public class Simulation implements Runnable {
             animals.add(animal);
             map.place(animal, true);
             counter++;
+            simWait();
         }
         Animal animal = new Animal(new Vector2d(0,0),MapDirection.NORTH,3,11);
         animals.add(animal);
@@ -52,7 +62,7 @@ public class Simulation implements Runnable {
     }
 
     @Override
-    public void run() {
+    public synchronized void run() {
 //        System.out.println("WIDTH " + map.getWidth());
 //        System.out.println("HEIGHT " + map.getHeight());
 
@@ -60,7 +70,7 @@ public class Simulation implements Runnable {
 
         for (int day = 0; day < time; day++) {
 
-            System.out.println("========================================DAY " + day + "========================================");
+//            System.out.println("=====================================================DAY " + day + "=====================================================");
 
             if (dead.size() != 0) {
                 Animal curr = dead.removeFirst();
@@ -73,6 +83,7 @@ public class Simulation implements Runnable {
                     map.getAnimals().remove(curr);
                     map.removeFromFertilized(curr.getPosition());
                     count += 1;
+                    simWait();
                 }
 //                    System.out.println(count);
                 if (count == 0) {
@@ -99,7 +110,7 @@ public class Simulation implements Runnable {
                     map.addToFertilized(currentAnimal.getPosition());
                     dead.addLast(currentAnimal);
                 }
-
+                simWait();
 
 
 
@@ -156,16 +167,18 @@ public class Simulation implements Runnable {
 
 //                rozmnazanie
                 if ((second != null) && (second.getAnimalEnergy() >= reproductionEnergy)) {
-                    System.out.println("Animals at position " + second.getPosition() + " are reproducing");
+//                    System.out.println("Animals at position " + second.getPosition() + " are reproducing");
 
                     Animal newborn = strongest.copulate(second);
-                    System.out.println(strongest.getGenotype() + " " + strongest.numberOfGenes);
-                    System.out.println(second.getGenotype() + " " + second.numberOfGenes);
-                    System.out.println("FATHER >>> " + strongest.AnimalToString1());
-                    System.out.println("MOTHER >>> " + second.AnimalToString1());
-                    System.out.println("CHILD >>> " + newborn.AnimalToString1());
+//                    System.out.println(strongest.getGenotype() + " " + strongest.numberOfGenes);
+//                    System.out.println(second.getGenotype() + " " + second.numberOfGenes);
+//                    System.out.println("FATHER >>> " + strongest.AnimalToString1());
+//                    System.out.println("MOTHER >>> " + second.AnimalToString1());
+//                    System.out.println("CHILD >>> " + newborn.AnimalToString1());
                     map.place(newborn,true);
                     animals.add(newborn);
+                    simWait();
+
 
                 }
 
@@ -173,9 +186,9 @@ public class Simulation implements Runnable {
 
             }
 
-            for (Animal animal : animals) {
-                System.out.println("Animal at " + animal.getPosition() + " energy " + animal.getAnimalEnergy() + " num of kids " + animal.getChildren());
-            }
+//            for (Animal animal : animals) {
+//                System.out.println("Animal at " + animal.getPosition() + " energy " + animal.getAnimalEnergy() + " num of kids " + animal.getChildren());
+//            }
 
 //            List<Animal> unalived = new ArrayList<>();
 //
@@ -195,6 +208,9 @@ public class Simulation implements Runnable {
             map.setGrasses(map.updateGrass());
 //            map.setGrasses(List.of(new Grass(new Vector2d(0,0),10)));
             this.grasses = map.getGrasses();
+
+            simWait();
+
         }
 
     }

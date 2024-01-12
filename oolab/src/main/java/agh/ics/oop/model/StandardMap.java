@@ -30,7 +30,6 @@ public class StandardMap implements WorldMap{
         this.height = height;
         this.grassNumber = grassNumber;
         this.grassEnergy = grassEnergy;
-//        this.id = id;
         this.size = size;
         this.userGrass = userGrass;
         this.lowerLeftLimit = new Vector2d(0, 0);
@@ -94,9 +93,6 @@ public class StandardMap implements WorldMap{
         Vector2d newPosition = animal.calculateNextPosition(direction);
         MapDirection oldOrientation = animal.getOrientation();
 
-//        System.out.println("CURRENT POSITION " + animal.getPosition());
-//        System.out.println("NEW POSITION " + newPosition);
-
         Vector2d previousPosition = animal.getPosition();
 
         animal.changeEnergy(-1);
@@ -117,6 +113,7 @@ public class StandardMap implements WorldMap{
         }else {
             animals.remove(animal);
             animal.move(direction, this);
+            animal.setActivatedGen(animal.getGenotype().getGenes().indexOf(direction));
             animals.add(animal);
             mapChanged("Animal moved from %s to %s in direction %s".formatted(previousPosition, animal.getPosition(), animal.orientationToString()));
         }

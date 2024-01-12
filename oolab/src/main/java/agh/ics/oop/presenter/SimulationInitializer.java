@@ -113,12 +113,8 @@ public class SimulationInitializer {
 
 
         Simulation sim = new Simulation(map,positions,time,copulateEnergy);
-        Platform.runLater(() -> {
-            newStage.show();
-        });
-        new Thread(() -> {
-            sim.run();
-        }).start();
+        Platform.runLater(newStage::show);
+        new Thread(sim).start();
 
 
     }

@@ -18,9 +18,15 @@ public class Animal implements WorldElement {
     public static final Vector2d UPPER_RIGHT_LIMIT = new Vector2d(4, 4);
     public static final Vector2d LOWER_LEFT_LIMIT = new Vector2d(0, 0);
 
+    private int numberOfConsumedGrass = 0;
+
+    private int activatedGen = 0;
+
     public ArrayList<Animal> allChildren = new ArrayList<>();
 
     public ArrayList<Animal> parents;
+
+    // Trzeba DFS zeby dostać potomków zwierzaka
 
 
     public Animal(){
@@ -211,4 +217,19 @@ public class Animal implements WorldElement {
         return this.getPosition().getY();
     }
 
+    public int getNumberOfConsumedGrass() {
+        return numberOfConsumedGrass;
+    }
+
+    public void incrementNumberOfConsumedGrass() {
+        this.numberOfConsumedGrass ++;
+    }
+
+    public int getActivatedGen() {
+        return activatedGen;
+    }
+
+    public void setActivatedGen(int activatedGen) {
+        this.activatedGen = activatedGen;
+    }
 }

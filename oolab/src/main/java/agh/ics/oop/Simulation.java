@@ -161,6 +161,7 @@ public class Simulation implements Runnable {
 //                pierwszy zawsze je
                 if (grass != null) {
                     strongest.changeEnergy(grass.getGrassEnergy());
+                    strongest.incrementNumberOfConsumedGrass();
 //                    System.out.println("Grass " + grass + " deleted from " + grass.getPosition() + " and position is " + position);
                     map.removeGrass(grass);
                 }

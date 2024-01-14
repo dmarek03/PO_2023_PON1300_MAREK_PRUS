@@ -17,7 +17,9 @@ public class World {
         System.out.println("System wystartował\n");
 
         List<Vector2d> positions = List.of(new Vector2d(3,1),new Vector2d(1,3));
-        WorldMap map = new StandardMap(40,40,300,10,1,1);
+
+        WorldMap map = new StandardMap(40,40,400,10,0.8,1);
+
 
         map.addObserver(new ConsoleMapDisplay());
 

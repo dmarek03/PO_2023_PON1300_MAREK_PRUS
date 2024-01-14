@@ -112,7 +112,7 @@ public class SimulationInitializer {
         }
 
 
-        Simulation sim = new Simulation(map,positions,time,copulateEnergy);
+        Simulation sim = new Simulation(map,positions,time,geneLength, startEnergy, copulateEnergy);
         Platform.runLater(newStage::show);
         new Thread(sim).start();
 

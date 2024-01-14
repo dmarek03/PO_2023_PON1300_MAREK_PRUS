@@ -1,5 +1,6 @@
 package agh.ics.oop;
 
+import agh.ics.oop.model.AllAnimalDescendants;
 import agh.ics.oop.model.Animal;
 import agh.ics.oop.model.Grass;
 import net.smoofyuniverse.map.WorldMap;
@@ -31,7 +32,7 @@ public class Statistics {
 
     private List<Animal> animalsWithTheMostPopularGenotype;
 
-    private int dateOfDeath;
+    private int dateOfDeath = 0;
 
 
 
@@ -45,6 +46,8 @@ public class Statistics {
         this.energy = animal.getAnimalEnergy();
         this.numberOfConsumedGrass = animal.getNumberOfConsumedGrass();
         this.numberOfChildren = animal.getChildren();
+        AllAnimalDescendants animalDescendants = new AllAnimalDescendants(animal);
+        this.numberOfDescendants = animalDescendants.countAllDescendants();
         if(animal.isDead()){
             this.dateOfDeath = animal.getAge();
         }
@@ -77,7 +80,7 @@ public class Statistics {
         }
 
         int MaxOccurrence = 0;
-        ArrayList<Integer> mostOftenGenotype = null;
+        List<Integer> mostOftenGenotype = new ArrayList<>();
 
         for(Map.Entry<ArrayList<Integer>, Integer> entry :genotypeCounter .entrySet()){
             int currentOccurrence = entry.getValue();
@@ -95,6 +98,21 @@ public class Statistics {
 
         this.animalsWithTheMostPopularGenotype =  animalWithTheMostPopularGenotype;
 
+    }
+    private String animalDateOfDeath() {
+        if (dateOfDeath == 0) {
+            return "Animal is still alive";
+        }
+        return "Date of death:"+dateOfDeath+'\n';
+
+    }
+
+    public String showAnimalStatistics(){
+
+        return ("Animal:%s\nThe genome of the animal:%s\nActive gen of genome:%d\n" +
+                "Energy of the animal:%d\nNumber of consumed grass:%d\nNumber of children:%d\n" +
+                "Number of descendants:%d\nAge:%d\n%s").formatted(animal, genes, activeGen, energy,
+                numberOfConsumedGrass, numberOfChildren, numberOfDescendants, age, animalDateOfDeath());
     }
 
     public List<Animal> getAnimalsWithTheMostPopularGenotype() {

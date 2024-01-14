@@ -25,7 +25,7 @@ public class World {
         System.out.println(map.getGrasses());
         System.out.println(map.getAnimals());
         System.out.println();
-        Simulation simulation = new Simulation(map,positions,8, 0);
+        Simulation simulation = new Simulation(map,positions,8, 5,10, 0.3);
 //        simulation.run();
         (new Thread(() -> {(simulation).run();})).start();
 //        for (int i = 0; i < 5; i++) {

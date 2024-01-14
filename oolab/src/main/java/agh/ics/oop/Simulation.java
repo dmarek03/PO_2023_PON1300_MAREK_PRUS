@@ -15,8 +15,11 @@ public class Simulation implements Runnable {
 
     private boolean wait = true;
     private final int time;
+    private final int geneLength;
 
-    private final int reproductionEnergy;
+    private final double  reproductionEnergy;
+
+    private final int animalEnergy;
 
     private void simWait() {
         if (wait) {
@@ -28,9 +31,11 @@ public class Simulation implements Runnable {
         }
     }
 
-    public Simulation(WorldMap map,List<Vector2d> positions, int time, int reproductionEnergy) {
+    public Simulation(WorldMap map,List<Vector2d> positions, int time,int geneLength , int animalEnergy, double reproductionEnergy) {
         this.time = time;
         this.map = map;
+        this.geneLength = geneLength;
+        this.animalEnergy = animalEnergy;
         this.reproductionEnergy = reproductionEnergy;
         int counter = 0;
         for (Vector2d position : positions) {
@@ -49,13 +54,13 @@ public class Simulation implements Runnable {
             }
             list.add(0);
             Genotype gene = new Genotype((ArrayList<Integer>) list);
-            Animal animal = new Animal(position, MapDirection.NORTH, 3, gene);
+            Animal animal = new Animal(position, MapDirection.NORTH, animalEnergy, gene);
             animals.add(animal);
             map.place(animal, true);
             counter++;
             simWait();
         }
-        Animal animal = new Animal(new Vector2d(0,0),MapDirection.NORTH,3,11);
+        Animal animal = new Animal(new Vector2d(0,0),MapDirection.NORTH,animalEnergy,11);
         animals.add(animal);
         map.place(animal,true);
         this.grasses = map.getGrasses();

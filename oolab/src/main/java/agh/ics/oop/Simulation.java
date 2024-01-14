@@ -71,25 +71,29 @@ public class Simulation implements Runnable {
         for (int day = 0; day < time; day++) {
 
 //            System.out.println("=====================================================DAY " + day + "=====================================================");
-
+            map.mapChanged("Day " + day);
             if (dead.size() != 0) {
                 Animal curr = dead.removeFirst();
                 map.getAnimals().remove(curr);
+                map.removeAnimalBool(curr);
                 map.removeFromFertilized(curr.getPosition());
                 int count = 0;
                 while (day - curr.getAge() >= 2) {
                     if (dead.size() == 0) {break;}
                     curr = dead.removeFirst();
                     map.getAnimals().remove(curr);
+                    map.removeAnimalBool(curr);
                     map.removeFromFertilized(curr.getPosition());
+//                    System.out.println("Animal " + curr + " died more than 2 days ago, and it's body should be removed");
                     count += 1;
-                    simWait();
+//                    simWait();
                 }
-//                    System.out.println(count);
+
                 if (count == 0) {
                     if (day - curr.getAge() < 2) {
                         dead.addFirst(curr);
                         map.getAnimals().add(curr);
+                        map.addAnimalBool(curr);
                     }
                 }
             }
@@ -163,6 +167,7 @@ public class Simulation implements Runnable {
                     strongest.changeEnergy(grass.getGrassEnergy());
 //                    System.out.println("Grass " + grass + " deleted from " + grass.getPosition() + " and position is " + position);
                     map.removeGrass(grass);
+                    map.removeGrassBool(grass);
                 }
 
 //                rozmnazanie

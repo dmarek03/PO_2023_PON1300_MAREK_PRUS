@@ -102,8 +102,9 @@ public class RandomPositionGenerator implements Iterable {
     }
 
     private double gauss(double x) {
-        double multiplier = (2/3)*maxHeight;
-        return 0.8 * Math.exp(-(multiplier*x*x));
+        double multiplier = 0.9*maxHeight;
+        double maxFuncHeight = 1;
+        return maxFuncHeight * Math.exp(-(multiplier*x*x));
     }
 
 

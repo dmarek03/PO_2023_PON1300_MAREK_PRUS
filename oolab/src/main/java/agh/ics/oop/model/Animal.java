@@ -152,10 +152,7 @@ public class Animal implements WorldElement {
         if(validator.canMoveTo(newPosition)){
             currentOrientation = currentOrientation.changeOrientation(direction);
             currentPosition = newPosition;
-
         }
-
-
     }
 
     public void setPosition(Vector2d newPosition){this.currentPosition = newPosition;}
@@ -191,6 +188,9 @@ public class Animal implements WorldElement {
 
     @Override
     public String path() {
+        if (isDead()) {
+            return "/dead.png";
+        }
         return switch (this.getOrientation()) {
             case NORTH -> "/north.png";
             case NORTHEAST -> "/northeast.png";

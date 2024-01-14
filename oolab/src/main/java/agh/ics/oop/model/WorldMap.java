@@ -73,6 +73,8 @@ public interface WorldMap extends MoveValidator {
 
     boolean isOccupiedByGrass(Vector2d position);
 
+    boolean isOccupiedByAnimal(Vector2d position);
+
     void setGrasses(List<Grass> newGrasses);
 
     void removeGrass(Grass grass);
@@ -82,5 +84,21 @@ public interface WorldMap extends MoveValidator {
     void removeFromFertilized(Vector2d pos);
 
     ArrayList<Grass> updateGrass();
+
+    void addGrassBool(Grass grass);
+
+    void removeGrassBool(Grass grass);
+
+    void addAnimalBool(Animal animal);
+
+    void removeAnimalBool(Animal animal);
+
+    Map<Vector2d,List<Animal>> getAnimalMap();
+
+    Map<Vector2d,Grass> getGrassMap();
+
+    Grass grassAt(Vector2d position);
+
+    Animal strongestAnimalAt(Vector2d position);
 
 }

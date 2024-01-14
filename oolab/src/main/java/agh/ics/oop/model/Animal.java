@@ -8,7 +8,7 @@ import static java.lang.Math.max;
 public class Animal implements WorldElement {
     private MapDirection currentOrientation;
     private Vector2d currentPosition;
-    public final double energyToCopulation = 0.3;
+    private double energyToCopulation = 0.3;
     private int animalEnergy;
     public int numberOfGenes;
     private final Genotype genotype;
@@ -190,6 +190,14 @@ public class Animal implements WorldElement {
 
     public int getChildren() {
         return children;
+    }
+
+    public double getEnergyToCopulation(){
+        return energyToCopulation;
+    }
+
+    public void setEnergyToCopulation(double energyToCopulation){
+        this.energyToCopulation = energyToCopulation;
     }
 
     @Override

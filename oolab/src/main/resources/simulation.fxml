@@ -25,6 +25,7 @@
 <!--            <Label fx:id="mapLabel" text="All animals will be living here!" textAlignment="CENTER"/>-->
 <!--            <Label fx:id="infoLabel" text="Messages here" textAlignment="CENTER"/>-->
             <GridPane fx:id="mapGrid"  vgap="0" hgap="0" gridLinesVisible="true" alignment="CENTER" />
+            <Label fx:id="infoLabel" text="Info Here" textAlignment="CENTER"/>
 
         </VBox>
     </center>

@@ -10,10 +10,18 @@ import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.util.Duration;
+import javafx.geometry.Pos;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.TextAlignment;
 
 import java.util.*;
 import java.util.List;
@@ -48,6 +56,21 @@ public class SimulationPresenter implements MapChangeListener {
         }
         mapGrid.getColumnConstraints().clear();
         mapGrid.getRowConstraints().clear();
+    }
+
+    private Button createButton(String path,int x, int y) {
+        Button button = new Button();
+
+        Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream(path)));
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(50);
+        imageView.setFitHeight(50);
+
+        button.setGraphic(imageView);
+        button.setStyle("-fx-background-color: transparent;");
+        button.setMaxSize(50, 50);
+        button.setOnAction(e -> animalButtonPressed(x, y));
+        return button;
     }
 
     private Label createLabel(int minWidth, int minHeight, String text) {
@@ -95,7 +118,8 @@ public class SimulationPresenter implements MapChangeListener {
             for (int i = lowerleft.getX(); i < upperright.getX(); i++) {
                 for (int j = lowerleft.getY(); j < upperright.getY(); j++) {
 
-                    mapGrid.add(new WorldElementBox("/ground.png"), i - lowerleft.getX() + 1, upperright.getY() - j);
+                    Button currButton = createButton("/ground.png",i,j);
+                    mapGrid.add(currButton, i - lowerleft.getX() + 1, upperright.getY() - j);
 
                     Vector2d position = new Vector2d(i, j);
 
@@ -109,16 +133,16 @@ public class SimulationPresenter implements MapChangeListener {
                         continue;
                     }
 
-                    WorldElementBox elementBox = new WorldElementBox(element.path());
-
-                    mapGrid.add(elementBox, i - lowerleft.getX() + 1, upperright.getY() - j);
-
+                    currButton = createButton(element.path(),i,j);
+                    mapGrid.add(currButton, i - lowerleft.getX() + 1, upperright.getY() - j);
 
                 }
             }
 
         }
     }
+
+
 
 
     @Override
@@ -175,15 +199,13 @@ public class SimulationPresenter implements MapChangeListener {
             element = map.grassAt(position);
         } else {
 
-            WorldElementBox elementBox = new WorldElementBox("/ground.png");
-
-            mapGrid.add(elementBox, i - lowerleft.getX() + 1, upperright.getY() - j);
+            Button currButton = createButton("/ground.png",i,j);
+            mapGrid.add(currButton, i - lowerleft.getX() + 1, upperright.getY() - j);
             return;
         }
 
-        WorldElementBox elementBox = new WorldElementBox(element.path());
-
-        mapGrid.add(elementBox, i - lowerleft.getX() + 1, upperright.getY() - j);
+        Button currButton = createButton(element.path(),i,j);
+        mapGrid.add(currButton, i - lowerleft.getX() + 1, upperright.getY() - j);
 
 
     }
@@ -200,6 +222,10 @@ public class SimulationPresenter implements MapChangeListener {
         isRunning = !isRunning;
     }
 
+
+    public void animalButtonPressed(int x, int y) {
+        System.out.println(x + " " + y);
+    }
 
 
 

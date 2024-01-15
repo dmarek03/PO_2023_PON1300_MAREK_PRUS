@@ -19,6 +19,8 @@ public class RandomPositionGenerator implements Iterable {
 
     public List<Vector2d> positions = new ArrayList<>();
 
+    private boolean update = false;
+
     public RandomPositionGenerator(int maxWidth, int maxHeight, int N, double size) {
         this.maxHeight = maxHeight;
         this.maxWidth = maxWidth;
@@ -28,13 +30,14 @@ public class RandomPositionGenerator implements Iterable {
         setPositions(maxWidth,maxHeight);
     }
 
-    public RandomPositionGenerator(int maxWidth, int maxHeight, List<Grass> grasses, List<Vector2d> fertilized, double size) {
+    public RandomPositionGenerator(int maxWidth, int maxHeight, List<Grass> grasses, List<Vector2d> fertilized, int N, double size) {
         this.maxHeight = maxHeight;
         this.maxWidth = maxWidth;
-        this.N = -1;
+        this.N = N;
         this.size = size;
         this.fertilized = fertilized;
         this.grassMap = new HashMap<>();
+        this.update = true;
         for (Grass grass : grasses) {positions.add(grass.getPosition());}
         for (Grass grass : grasses) {grassMap.put(grass.getPosition(),grass);}
         setPositions(maxWidth,maxHeight);
@@ -68,7 +71,7 @@ public class RandomPositionGenerator implements Iterable {
             }
         }
 
-        if ( N >= 0 ) {
+        if ( !update ) {
             for (int i = 0; i < this.getN(); i++) {
                 int random = randint(allPossibilities.size());
                 Vector2d position = allPossibilities.get(random);
@@ -78,9 +81,14 @@ public class RandomPositionGenerator implements Iterable {
                 }
             }
         } else {
+            int counter = 0;
             for (Map.Entry<Vector2d,Double> entry : possibs.entrySet()) {
+                if (counter == N) {break;}
                 double rand = Math.random();
-                if (rand <= entry.getValue()) {this.positions.add(entry.getKey());}
+                if (rand <= entry.getValue()) {
+                    this.positions.add(entry.getKey());
+                    counter++;
+                }
             }
         }
 
@@ -94,7 +102,11 @@ public class RandomPositionGenerator implements Iterable {
     }
 
     private double gauss(double x) {
-        return 0.8 * Math.exp(-(x*x));
+
+        double multiplier = 0.9*maxHeight;
+        double maxFuncHeight = 1;
+        return maxFuncHeight * Math.exp(-(multiplier*x*x));
+
     }
 
 

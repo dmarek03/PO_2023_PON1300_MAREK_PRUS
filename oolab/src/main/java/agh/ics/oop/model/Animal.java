@@ -8,9 +8,9 @@ import static java.lang.Math.max;
 public class Animal implements WorldElement {
     private MapDirection currentOrientation;
     private Vector2d currentPosition;
-    public final double energyToCopulation = 0.3;
+    private double energyToCopulation = 0.3;
     private int animalEnergy;
-    private  int numberOfGenes;
+    public int numberOfGenes;
     private final Genotype genotype;
     private int age;
     private int children = 0;
@@ -18,9 +18,16 @@ public class Animal implements WorldElement {
     public static final Vector2d UPPER_RIGHT_LIMIT = new Vector2d(4, 4);
     public static final Vector2d LOWER_LEFT_LIMIT = new Vector2d(0, 0);
 
+    private int numberOfConsumedGrass = 0;
+
+    private int activatedGen = 0;
+
     public ArrayList<Animal> allChildren = new ArrayList<>();
 
     public ArrayList<Animal> parents;
+
+
+
 
     public Animal(){
         this.currentOrientation = MapDirection.NORTH;
@@ -47,6 +54,7 @@ public class Animal implements WorldElement {
         this.animalEnergy = energy;
         this.genotype = genotype;
         this.age = 0;
+        this.numberOfGenes = genotype.getNumberOfGenes();
     }
 
     public String orientationToString(){
@@ -54,7 +62,6 @@ public class Animal implements WorldElement {
 
 
     }
-    // The method will be used in class GlobalMap to add energy to animalEnergy when it ate the grass
     public void changeEnergy(int value){
         this.animalEnergy = max(animalEnergy + value, 0);
     }
@@ -64,7 +71,6 @@ public class Animal implements WorldElement {
     }
 
     public Animal copulate(Animal mother){
-        System.out.println(numberOfGenes);
         int childEnergy = (int)((energyToCopulation)*(mother.animalEnergy + this.animalEnergy));
         ArrayList<Integer> childGenes;
         if(this.animalEnergy > mother.animalEnergy){
@@ -79,13 +85,17 @@ public class Animal implements WorldElement {
         Genotype childGenotype = new Genotype(GENES_RANGE, numberOfGenes, childGenes);
         childGenotype.randomMutations();
 
+
         Animal newborn = new Animal(mother.currentPosition, mother.currentOrientation, childEnergy, childGenotype);
 
         this.allChildren.add(newborn);
+        this.incrementNumberOfChildren();
         mother.allChildren.add(newborn);
+        mother.incrementNumberOfChildren();
         newborn.parents = new ArrayList<>();
         newborn.parents.add(this);
         newborn.parents.add(mother);
+
 
         return newborn;
 
@@ -95,10 +105,8 @@ public class Animal implements WorldElement {
         int total_energy = animal1.animalEnergy + animal2.animalEnergy;
         Random random = new Random();
         boolean isRight = 1 == random.nextInt(2);
-        System.out.println(isRight);
         ArrayList<Integer> genes = new ArrayList<>();
         int divideIdx = (animal1.animalEnergy*numberOfGenes / total_energy);
-        System.out.println(divideIdx);
         if (isRight){
             for(int i =0; i < numberOfGenes;i++){
                 if(i <= divideIdx) {
@@ -114,10 +122,13 @@ public class Animal implements WorldElement {
         }
         return genes;
     }
-    private String AnimalToString1(){
-        return orientationToString()+" "+animalEnergy+" "+age+" "+children;
+    public String AnimalToString1(){
+        return orientationToString()+" "+animalEnergy+" "+age+" "+children + " " + this.getPosition();
     }
-    private String AnimalToString(){
+    public String AnimalToString(){
+        if (this.isDead()) {
+            return "X";
+        }
         return orientationToString();
     }
 
@@ -135,7 +146,7 @@ public class Animal implements WorldElement {
         return LOWER_LEFT_LIMIT.precedes(position) && UPPER_RIGHT_LIMIT.follows(position);
     }
 
-    public Vector2d calculateNextPosition(Integer direction){
+    public Vector2d calculateNextPosition(int direction){
         return currentPosition.add(currentOrientation.changeOrientation(direction).toUnitVector());
     }
     public void move(int direction, MoveValidator validator){
@@ -143,10 +154,7 @@ public class Animal implements WorldElement {
         if(validator.canMoveTo(newPosition)){
             currentOrientation = currentOrientation.changeOrientation(direction);
             currentPosition = newPosition;
-
         }
-
-
     }
 
     public void setPosition(Vector2d newPosition){this.currentPosition = newPosition;}
@@ -179,19 +187,56 @@ public class Animal implements WorldElement {
     public int getChildren() {
         return children;
     }
+    public ArrayList<Animal> getParents(){
+        return parents;
+    }
+
+    public double getEnergyToCopulation(){
+        return energyToCopulation;
+    }
+
+    public void setEnergyToCopulation(double energyToCopulation){
+        this.energyToCopulation = energyToCopulation;
+    }
 
     @Override
     public String path() {
+        if (isDead()) {
+            return "/dead.png";
+        }
         return switch (this.getOrientation()) {
-            case NORTH -> "/up.png";
-            case NORTHEAST -> "/upRight.png";
-            case EAST -> "/right.png";
-            case SOUTHEAST -> "/downRight.png";
-            case SOUTH -> "/down.png";
-            case SOUTHWEST -> "/downLeft.png";
-            case WEST -> "/left.png";
-            case NORTHWEST -> "/upLeft.png";
+            case NORTH -> "/north.png";
+            case NORTHEAST -> "/northeast.png";
+            case EAST -> "/east.png";
+            case SOUTHEAST -> "/southeast.png";
+            case SOUTH -> "/south.png";
+            case SOUTHWEST -> "/southwest.png";
+            case WEST -> "/west.png";
+            case NORTHWEST -> "/northwest.png";
         };
     }
 
+    public int getXPosition() {
+        return this.getPosition().getX();
+    }
+
+    public int getYPosition() {
+        return this.getPosition().getY();
+    }
+
+    public int getNumberOfConsumedGrass() {
+        return numberOfConsumedGrass;
+    }
+
+    public void incrementNumberOfConsumedGrass() {
+        this.numberOfConsumedGrass ++;
+    }
+
+    public int getActivatedGen() {
+        return activatedGen;
+    }
+
+    public void setActivatedGen(int activatedGen) {
+        this.activatedGen = activatedGen;
+    }
 }

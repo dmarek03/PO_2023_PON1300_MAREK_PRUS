@@ -15,6 +15,8 @@ public class Grass implements WorldElement {
         return position;
     }
 
+    public int getGrassEnergy() {return this.grassEnergy;}
+
     public void setPosition(Vector2d position) {
         this.position = position;
     }
@@ -23,6 +25,7 @@ public class Grass implements WorldElement {
     public void move(int direction, MoveValidator validator) {return;}
 
     public String toString() {
+//        return this.getPosition().toString();
         return "*";
     }
 

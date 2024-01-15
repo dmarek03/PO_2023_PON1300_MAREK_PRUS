@@ -4,6 +4,7 @@ package agh.ics.oop.model;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 public class  Vector2dTest {
@@ -14,7 +15,7 @@ public class  Vector2dTest {
         int randY = randint(100);
         Vector2d tester = new Vector2d(randX,randY);
 
-        assertEquals(tester.equals(new Vector2d(randX,randY)),true);
+        assertEquals(tester, new Vector2d(randX, randY));
     }
     @Test
     public void toStringTest() {
@@ -32,7 +33,7 @@ public class  Vector2dTest {
         Vector2d tester = new Vector2d(randX,randY);
         Vector2d tester2 = new Vector2d(randX + 1,randY + 1);
 
-        assertEquals(tester.precedes(tester2),true);
+        assertTrue(tester.precedes(tester2));
     }
 
     @Test
@@ -42,7 +43,7 @@ public class  Vector2dTest {
         Vector2d tester = new Vector2d(randX,randY);
         Vector2d tester2 = new Vector2d(randX + 1,randY + 1);
 
-        assertEquals(tester2.follows(tester),true);
+        assertTrue(tester2.follows(tester));
     }
 
     @Test

@@ -9,14 +9,14 @@ import java.util.stream.Collectors;
 public class StandardMap implements WorldMap{
     private final int width;
     private final int height;
-    private int grassNumber;
-    private List<Animal> animals = new ArrayList<>();
+    private final  int grassNumber;
+    private final  List<Animal> animals = new ArrayList<>();
     private List<Grass> grasses;
     public List<Vector2d> fertilized = new ArrayList<>();
-    private int grassEnergy;
-    private List<MapChangeListener> observers = new ArrayList<>();
+    private final  int grassEnergy;
+    private final List<MapChangeListener> observers = new ArrayList<>();
 
-    private int userGrass;
+    private final  int userGrass;
 
     private final UUID id;
 
@@ -167,13 +167,6 @@ public class StandardMap implements WorldMap{
 
 
 
-
-
-    // to jak zrobisz RandomPositionGenerator to trzeba zmienić
-
-    // pa ->
-    // są dwie opcje, do pierwszego stawiania trawy i do update'owania.
-    // Dodałem pole size, żeby zmieniało wartość rozkładu do gaussa
     public ArrayList<Grass> placeGrass(){
         RandomPositionGenerator randomPositionGenerator = new RandomPositionGenerator(width, height, grassNumber, size);
         ArrayList<Grass> grasses1 = new ArrayList<>();
@@ -249,8 +242,6 @@ public class StandardMap implements WorldMap{
     public boolean isOccupiedByGrass(Vector2d position){
         return checkGrassMatrix(position);
     }
-    // Zmieniłem objectAt tak,że zwraca teraz listę zwierząt na danej pozycji,albo traw jeśli nie ma zwierząt
-    // a jeśli dana pozycja jest pusta to zwraca null
 
     public List<Animal> animalsAt(Vector2d position) {
         return this.animalMap.get(position);
@@ -333,7 +324,6 @@ public class StandardMap implements WorldMap{
     public UUID getId() {
         return id;
     }
-    // tutaj jest problem dlatego, że AbstractWorldMap oczekuje tutaj Hashmapy ale jak nie będziemy tej klasy używać to lepiej zostawić tak
     @Override
     public List<Animal> getAnimals() {return this.animals;}
 
@@ -342,18 +332,6 @@ public class StandardMap implements WorldMap{
     public List<Grass> getGrasses() {
         return this.grasses;
     }
-
-    // tutaj to pytanie jaki chcesz mieć porządek zwracania czy taki jak w Competition czy po pozycjach
-
-    // pa ->
-    // nie wiem czy będziemy tego w ogóle używać, ale jak już, to po pozycjach, a w każdej pozycji wg competition
-    // w sumie można zrobic tak, że po tym właśnie będziemy liczyć kto je i kto się rozmnaża.
-    // wtedy mogłoby to zwracać Map<Vector2d,List<Animal>>
-//    public Map<Vector2d,List<WorldElement>> getOrderedAnimals() {
-//        return null;
-//    }
-    // coś w tym stylu
-
 
     public List<Animal> getOrderedAnimals() {
         this.getAnimals().sort(
@@ -365,6 +343,20 @@ public class StandardMap implements WorldMap{
 //                        .reversed()
         );
         return this.getAnimals();
+    }
+
+
+    public int countFreePositions(){
+        int cnt = 0;
+        for(int x= 0 ;x < width;x++){
+            for(int y = 0; y < height;y++){
+                if(objectAt(new Vector2d(x, y)) == null){
+                    cnt++;
+                }
+            }
+
+        }
+        return cnt;
     }
 
     public int getWidth() {
@@ -380,7 +372,6 @@ public class StandardMap implements WorldMap{
     }
 
     public void removeGrass(Grass grass) {
-//        System.out.println("Grass " + grass + " deleted from " + grass.getPosition());
         this.grasses.remove(grass);
     }
 

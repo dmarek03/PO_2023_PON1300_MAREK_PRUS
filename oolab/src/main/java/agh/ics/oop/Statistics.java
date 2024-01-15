@@ -3,6 +3,7 @@ package agh.ics.oop;
 import agh.ics.oop.model.AllAnimalDescendants;
 import agh.ics.oop.model.Animal;
 import agh.ics.oop.model.Grass;
+import agh.ics.oop.model.StandardMap;
 import net.smoofyuniverse.map.WorldMap;
 
 import java.util.ArrayList;
@@ -13,6 +14,16 @@ import java.util.Map;
 public class Statistics {
     private Animal animal;
     private ArrayList<Animal> animals;
+
+    private StandardMap map;
+
+    private List<Grass> grasses;
+
+    private int numberOfAnimals;
+
+    private int numberOfGrasses;
+
+    private int numberOfFreePositions;
     private ArrayList<Integer> genes;
 
     private int activeGen;
@@ -24,7 +35,6 @@ public class Statistics {
 
     private int numberOfChildren;
 
-    // Ustawić po napisaniu DFS
     private int numberOfDescendants;
 
     // Trzeba jakoś dostać informację o pozycjach, na których jest wiekszę prawdopodobieństwo
@@ -53,19 +63,49 @@ public class Statistics {
         }
     }
 
-    public Statistics(ArrayList<Animal> animals){
+    public Statistics(StandardMap map, List<Grass> grasses, ArrayList<Animal> animals){
+        this.grasses = grasses;
+        this.map = map;
         this.animals = animals;
-    }
-    // moim zdaniem chyba trzeba będzie zrobić tak zeby konstruktor przyjmował mape albo od razu listę
-    // z preferowanymi  pozycjami, tylko wtedy taki getter musi być w Standard Map
-    public Statistics(WorldMap map){
+        this.numberOfAnimals = animals.size();
+        this.numberOfGrasses = grasses.size();
+        this.numberOfFreePositions = map.countFreePositions();
 
 
     }
 
 
+    public double getAverageAnimalEnergy(){
+        int totalEnergy = 0;
+        for(Animal a: animals){
+            totalEnergy += a.getAnimalEnergy();
+        }
+        return (double) totalEnergy /animals.size();
+    }
 
-    public void findAnimalsWithTheMostPopularGenotype(){
+    public double getAverageAnimalAge(){
+        int totalAge = 0;
+        for(Animal a: animals){
+            totalAge += a.getAge();
+        }
+        return (double) totalAge  /animals.size();
+    }
+
+
+
+    public double getAverageNumberOfChild(){
+        int totalNumberOfChild = 0;
+        for(Animal a: animals){
+            totalNumberOfChild += a.getChildren();
+        }
+        return (double) totalNumberOfChild /animals.size();
+    }
+
+
+
+
+
+    public List<Animal> findAnimalsWithTheMostPopularGenotype(){
         Map<ArrayList<Integer>, Animal> animalsWithGenotype = new HashMap<>();
         Map<ArrayList<Integer>, Integer> genotypeCounter = new HashMap<>();
         List<Animal> animalWithTheMostPopularGenotype = new ArrayList<>();
@@ -96,7 +136,7 @@ public class Statistics {
             }
         }
 
-        this.animalsWithTheMostPopularGenotype =  animalWithTheMostPopularGenotype;
+         return animalWithTheMostPopularGenotype;
 
     }
     private String animalDateOfDeath() {

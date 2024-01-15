@@ -6,6 +6,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
@@ -63,6 +64,13 @@ public class SimulationInitializer {
     private CheckBox switchMutation;
 
     @FXML
+    private Button StopStartSimulationButton;
+    private boolean isRunning =true;
+
+
+
+
+    @FXML
     private void onSimulationStartClicked() throws IOException, InterruptedException {
 
         int time = Integer.parseInt(simTimeField.getText());
@@ -112,9 +120,11 @@ public class SimulationInitializer {
         }
 
 
-        Simulation sim = new Simulation(map,positions,time,geneLength, startEnergy, copulateEnergy);
+        Simulation sim = new Simulation(map,positions,time,geneLength, startEnergy, creationEnergy, copulateEnergy);
+        presenter.sim = sim;
+        presenter.presenterThread = new Thread(sim);
         Platform.runLater(newStage::show);
-        new Thread(sim).start();
+        presenter.presenterThread.start();
 
 
     }
@@ -130,5 +140,7 @@ public class SimulationInitializer {
 //        Image image = new Image(backgroung_path);
 
     }
+
+
 
 }

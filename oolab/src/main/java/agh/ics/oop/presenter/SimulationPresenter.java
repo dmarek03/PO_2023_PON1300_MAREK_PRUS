@@ -1,5 +1,6 @@
 package agh.ics.oop.presenter;
 
+import agh.ics.oop.Simulation;
 import agh.ics.oop.model.*;
 import agh.ics.oop.view.WorldElementBox;
 import javafx.animation.KeyFrame;
@@ -7,6 +8,7 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -24,7 +26,15 @@ public class SimulationPresenter implements MapChangeListener {
     @FXML
     private GridPane mapGrid;
 
+    @FXML
+    private Button StopStartSimulationButton;
+
     private WorldMap map;
+
+    public Thread presenterThread;
+
+    public Simulation sim;
+    private boolean isRunning = true;
 
     private boolean firstDraw = true;
 
@@ -177,6 +187,24 @@ public class SimulationPresenter implements MapChangeListener {
 
 
     }
+    @FXML
+    public void stopStartSimulation() {
+        if (isRunning) {
+            StopStartSimulationButton.setText("Start");
+            sim.stop();
+        } else {
+            StopStartSimulationButton.setText("Stop");
+            sim.resume();
+        }
+
+        isRunning = !isRunning;
+    }
+
+
+
+
+
+
 
 
 }

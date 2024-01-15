@@ -26,7 +26,7 @@ public class Animal implements WorldElement {
 
     public ArrayList<Animal> parents;
 
-    // Trzeba DFS zeby dostać potomków zwierzaka
+
 
 
     public Animal(){
@@ -62,7 +62,6 @@ public class Animal implements WorldElement {
 
 
     }
-    // The method will be used in class GlobalMap to add energy to animalEnergy when it ate the grass
     public void changeEnergy(int value){
         this.animalEnergy = max(animalEnergy + value, 0);
     }
@@ -72,7 +71,6 @@ public class Animal implements WorldElement {
     }
 
     public Animal copulate(Animal mother){
-//        System.out.println(numberOfGenes);
         int childEnergy = (int)((energyToCopulation)*(mother.animalEnergy + this.animalEnergy));
         ArrayList<Integer> childGenes;
         if(this.animalEnergy > mother.animalEnergy){
@@ -86,14 +84,14 @@ public class Animal implements WorldElement {
 
         Genotype childGenotype = new Genotype(GENES_RANGE, numberOfGenes, childGenes);
         childGenotype.randomMutations();
-//        System.out.println("numberOfGenes " + numberOfGenes);
+
 
         Animal newborn = new Animal(mother.currentPosition, mother.currentOrientation, childEnergy, childGenotype);
 
         this.allChildren.add(newborn);
-        this.children++;
+        this.incrementNumberOfChildren();
         mother.allChildren.add(newborn);
-        mother.children++;
+        mother.incrementNumberOfChildren();
         newborn.parents = new ArrayList<>();
         newborn.parents.add(this);
         newborn.parents.add(mother);
@@ -107,10 +105,8 @@ public class Animal implements WorldElement {
         int total_energy = animal1.animalEnergy + animal2.animalEnergy;
         Random random = new Random();
         boolean isRight = 1 == random.nextInt(2);
-//        System.out.println(isRight);
         ArrayList<Integer> genes = new ArrayList<>();
         int divideIdx = (animal1.animalEnergy*numberOfGenes / total_energy);
-//        System.out.println(divideIdx);
         if (isRight){
             for(int i =0; i < numberOfGenes;i++){
                 if(i <= divideIdx) {
@@ -150,7 +146,7 @@ public class Animal implements WorldElement {
         return LOWER_LEFT_LIMIT.precedes(position) && UPPER_RIGHT_LIMIT.follows(position);
     }
 
-    public Vector2d calculateNextPosition(Integer direction){
+    public Vector2d calculateNextPosition(int direction){
         return currentPosition.add(currentOrientation.changeOrientation(direction).toUnitVector());
     }
     public void move(int direction, MoveValidator validator){
@@ -190,6 +186,9 @@ public class Animal implements WorldElement {
 
     public int getChildren() {
         return children;
+    }
+    public ArrayList<Animal> getParents(){
+        return parents;
     }
 
     public double getEnergyToCopulation(){

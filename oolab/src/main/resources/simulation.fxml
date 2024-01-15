@@ -29,4 +29,9 @@
 
         </VBox>
     </center>
+    <bottom>
+    <HBox spacing="10" alignment="CENTER">
+        <Button fx:id="StopStartSimulationButton" text="Stop" onAction="#stopStartSimulation"/>
+    </HBox>
+    </bottom>
 </BorderPane>

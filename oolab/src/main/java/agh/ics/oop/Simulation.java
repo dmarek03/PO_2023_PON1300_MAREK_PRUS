@@ -14,12 +14,29 @@ public class Simulation implements Runnable {
     private List<Animal> animals = new ArrayList<>();
 
     private boolean wait = true;
+
+    private boolean paused = false;
     private final int time;
     private final int geneLength;
 
-    private final double  reproductionEnergy;
+    private int currentDay = 0;
+
+    private final double percentageNumberofEnergyUsingCopulation;
+
+    private final int  reproductionEnergy;
 
     private final int animalEnergy;
+    private final Object pauseLock = new Object(); // Object for synchronization
+    private boolean stopped = false;
+
+    public synchronized void stop() {
+        stopped = true;
+    }
+
+    public synchronized void resume() {
+        stopped = false;
+        notifyAll();
+    }
 
     private void simWait() {
         if (wait) {
@@ -31,60 +48,57 @@ public class Simulation implements Runnable {
         }
     }
 
-    public Simulation(WorldMap map,List<Vector2d> positions, int time,int geneLength , int animalEnergy, double reproductionEnergy) {
+    public Simulation(WorldMap map,List<Vector2d> positions, int time,int geneLength , int animalEnergy,double copulateEnergy, int reproductionEnergy) {
         this.time = time;
         this.map = map;
         this.geneLength = geneLength;
         this.animalEnergy = animalEnergy;
+        this.percentageNumberofEnergyUsingCopulation = copulateEnergy;
         this.reproductionEnergy = reproductionEnergy;
-        int counter = 0;
         for (Vector2d position : positions) {
-            List<Integer> list = new ArrayList<>();
-            boolean done = false;
+            ArrayList<Integer> list = new ArrayList<>();
             for (int i = 0 ; i < 10; i++) {
-                if (!(done) && (counter == 0)) {
-                    list.add(7);
-                    done = true;
-                } else if (!(done) && (counter == 1)) {
-                    list.add(3);
-                    done = true;
-                } else if (done) {
-                    list.add(0);
-                }
+                list.add(positions.indexOf(position));
             }
-            list.add(0);
-            Genotype gene = new Genotype((ArrayList<Integer>) list);
+            Genotype gene = new Genotype(list);
             Animal animal = new Animal(position, MapDirection.NORTH, animalEnergy, gene);
             animals.add(animal);
             map.place(animal, true);
-            counter++;
             simWait();
         }
-        Animal animal = new Animal(new Vector2d(0,0),MapDirection.NORTH,animalEnergy,11);
-        animals.add(animal);
-        map.place(animal,true);
         this.grasses = map.getGrasses();
     }
 
     @Override
     public synchronized void run() {
-//        System.out.println("WIDTH " + map.getWidth());
-//        System.out.println("HEIGHT " + map.getHeight());
 
         Deque<Animal> dead = new ArrayDeque<>();
 
         for (int day = 0; day < time; day++) {
 
+//            if (paused || stopped) {
+//                currentDay = day; // Save the current day
+//                synchronized (pauseLock) {
+//                    while (paused || stopped) {
+//                        try {
+//                            pauseLock.wait(); // Wait for resume
+//                        } catch (InterruptedException e) {
+//                            throw new RuntimeException(e);
+//                        }
+//                    }
+//                }
+//            }
+
 //            System.out.println("=====================================================DAY " + day + "=====================================================");
             map.mapChanged("Day " + day);
-            if (dead.size() != 0) {
+            if (!dead.isEmpty()) {
                 Animal curr = dead.removeFirst();
                 map.getAnimals().remove(curr);
                 map.removeAnimalBool(curr);
                 map.removeFromFertilized(curr.getPosition());
                 int count = 0;
                 while (day - curr.getAge() >= 2) {
-                    if (dead.size() == 0) {break;}
+                    if (dead.isEmpty()) {break;}
                     curr = dead.removeFirst();
                     map.getAnimals().remove(curr);
                     map.removeAnimalBool(curr);
@@ -219,11 +233,19 @@ public class Simulation implements Runnable {
             map.setGrasses(map.updateGrass());
 //            map.setGrasses(List.of(new Grass(new Vector2d(0,0),10)));
             this.grasses = map.getGrasses();
-
+            currentDay ++;
             simWait();
 
         }
 
+    }
+
+    public int getCurrentDay() {
+        return currentDay;
+    }
+
+    public int getTime(){
+        return time;
     }
 
 //    public Simulation(List<MoveDirection> moves, WorldMap map) {

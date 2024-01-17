@@ -204,6 +204,8 @@ public class Animal implements WorldElement {
         return age;
     }
 
+    public void setAge(int number) {this.age = number;}
+
     public int getChildren() {
         return children;
     }
@@ -218,6 +220,16 @@ public class Animal implements WorldElement {
     public void setEnergyToCopulation(double energyToCopulation){
         this.energyToCopulation = energyToCopulation;
     }
+
+    private int deathdate = 0;
+    public int getDeathDate() {
+        return this.deathdate;
+    }
+
+    public void setDeathDate(int date) {
+        this.deathdate = date;
+    }
+
 
     @Override
     public String path() {
@@ -256,7 +268,7 @@ public class Animal implements WorldElement {
     }
 
     @Override
-    public String secondaryPath() {
+    public String healthPath() {
         return switch (healthEnum(this.getAnimalEnergy())) {
             case VERY_BAD -> "/masks/healthState/veryBadHealth.png";
             case BAD -> "/masks/healthState/badHealth.png";
@@ -265,6 +277,35 @@ public class Animal implements WorldElement {
             case VERY_GOOD -> "/masks/healthState/veryGoodHealth.png";
         };
     }
+
+    @Override
+    public String ASCII() {
+        if (isDead()) {
+            return "X";
+        }
+        return switch (this.getOrientation()) {
+            case NORTH -> "↑";
+            case NORTHEAST -> "↗";
+            case EAST -> "→";
+            case SOUTHEAST -> "↘";
+            case SOUTH -> "↓";
+            case SOUTHWEST -> "↙";
+            case WEST -> "←";
+            case NORTHWEST -> "↖";
+        };
+    }
+
+    @Override
+    public String color() {
+        return switch (healthEnum(this.getAnimalEnergy())) {
+            case VERY_BAD -> "#FF0000";
+            case BAD -> "#FF9334";
+            case NEUTRAL -> "#FFF500";
+            case GOOD -> "#00E9FF";
+            case VERY_GOOD -> "#00158B";
+        };
+    }
+
 
     public int getXPosition() {
         return this.getPosition().getX();

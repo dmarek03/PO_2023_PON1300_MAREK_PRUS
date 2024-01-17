@@ -15,7 +15,10 @@ public interface WorldElement {
 
     String path();
 
-    String secondaryPath();
+    String healthPath();
+
+    String ASCII();
+    String color();
 
 
 }

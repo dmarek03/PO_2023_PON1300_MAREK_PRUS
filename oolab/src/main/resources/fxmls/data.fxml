@@ -19,6 +19,7 @@
 
         <VBox spacing="10">
 
+            <Button text="Load config" onAction="#onLoadClicked"/>
             <HBox spacing="10">
                 <Label text="Map Height:"/>
                 <TextField fx:id="mapHeightField" promptText="int"/>
@@ -97,6 +98,7 @@
 
 
             <Button text="Start" onAction="#onSimulationStartClicked"/>
+            <Button text="Save config" onAction="#onSaveClicked"/>
         </VBox>
     </center>
 </BorderPane>

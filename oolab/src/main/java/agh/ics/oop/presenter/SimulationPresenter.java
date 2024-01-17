@@ -42,7 +42,6 @@ public class SimulationPresenter implements MapChangeListener {
     @FXML
     private Label mapStatInfo;
 
-
     private WorldMap map;
 
     public Thread presenterThread;
@@ -78,13 +77,13 @@ public class SimulationPresenter implements MapChangeListener {
         Boundary bounds = map.getCurrentBounds();
 
         int horCells = Math.abs(bounds.upperright().getX() - bounds.lowerleft().getX()) + 2;
-        System.out.println(horCells);
+//        System.out.println(horCells);
         int vertCells = Math.abs(bounds.upperright().getY() - bounds.lowerleft().getY()) + 2;
         int min = Math.min(((sceneWidth) / (horCells)), ((sceneHeight) / (vertCells)));
         this.cellWidth = min;
         this.cellHeight = min;
 
-        System.out.println("Measures Initialized " + cellWidth + " " + cellHeight);
+//        System.out.println("Measures Initialized " + cellWidth + " " + cellHeight);
 
     }
 
@@ -100,21 +99,25 @@ public class SimulationPresenter implements MapChangeListener {
 
     private Canvas createCanvas(String path, int x, int y) {
         Canvas canvas = new Canvas(cellWidth, cellHeight);
-        GraphicsContext gc = canvas.getGraphicsContext2D();
+        GraphicsContext GC = canvas.getGraphicsContext2D();
 
         Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream(path)));
-        gc.drawImage(image, 0, 0, cellWidth, cellHeight);
-
+        GC.drawImage(image, 0, 0, cellWidth, cellHeight);
+        image = null;
+        GC = null;
+        System.gc();
         canvas.setOnMouseClicked(e -> animalButtonPressed(x, y));
 
         return canvas;
     }
 
-    private Label createLabel(int minWidth, int minHeight, String text) {
+
+    private Label createLabel(int minWidth, int minHeight, String text, String color) {
         Label label = new Label();
         label.setMinSize(minWidth, minHeight);
         label.setText(text);
         label.setAlignment(Pos.CENTER);
+        label.setStyle(color);
         return label;
     }
 
@@ -138,20 +141,23 @@ public class SimulationPresenter implements MapChangeListener {
             }
 
             for (int i = lowerleft.getX() + 1; i < upperright.getX() + 1; i++) {
-                Label label = createLabel(width,height,Integer.toString(i - 1));
-                label.setStyle("-fx-border-color: #000000");
+                Label label = createLabel(width,height,Integer.toString(i - 1),"-fx-border-color: #000000");
                 mapGrid.add(label,i - lowerleft.getX(),0);
+                label = null;
+                System.gc();
             }
 
             for (int j = lowerleft.getY(); j < upperright.getY(); j++) {
-                Label label = createLabel(width,height,Integer.toString(j));
-                label.setStyle("-fx-border-color: #000000");
+                Label label = createLabel(width,height,Integer.toString(j),"-fx-border-color: #000000");
                 mapGrid.add(label,0,upperright.getY() - j);
+                label = null;
+                System.gc();
             }
 
-            Label zeroLabel = createLabel(width,height,"y\\x");
-            zeroLabel.setStyle("-fx-border-color: #000000");
+            Label zeroLabel = createLabel(width,height,"y\\x","-fx-border-color: #000000");
             mapGrid.add(zeroLabel,0,0);
+            zeroLabel = null;
+            System.gc();
 
             for (int i = lowerleft.getX(); i < upperright.getX(); i++) {
                 for (int j = lowerleft.getY(); j < upperright.getY(); j++) {
@@ -161,8 +167,6 @@ public class SimulationPresenter implements MapChangeListener {
 
         }
     }
-
-
 
 
     @Override
@@ -197,7 +201,7 @@ public class SimulationPresenter implements MapChangeListener {
 
         Platform.runLater(() -> {
             if (firstDraw) {
-                displayer = new FileDisplay("oolab/mapLogs/" + map.getId().toString() + ".log");
+                displayer = new FileDisplay("oolab/mapLogs/" + map.getId().toString() + ".csv");
                 drawMap();
                 firstDraw = false;
             } else {
@@ -284,7 +288,7 @@ public class SimulationPresenter implements MapChangeListener {
                 mapGrid.add(canvas, i - lowerleft.getX() + 1, upperright.getY() - j);
             }
 
-            canvas = createCanvas(animal.secondaryPath(), i, j);
+            canvas = createCanvas(animal.healthPath(), i, j);
             mapGrid.add(canvas, i - lowerleft.getX() + 1, upperright.getY() - j);
         }
         canvas = null;
@@ -303,7 +307,7 @@ public class SimulationPresenter implements MapChangeListener {
 
 
     public void onSaveStatsButtonClicked() {
-        System.out.println("Here will be saving stats");
+//        System.out.println("Here will be saving stats");
 
         String text = "";
 
@@ -314,7 +318,7 @@ public class SimulationPresenter implements MapChangeListener {
             text += "\n" + animalStatInfo.getText() + "\n\n====================\n\n";
         }
 
-        if (text != "") {
+        if (!text.equals("")) {
             displayer.write(text);
         } else {
             mapStatInfo.setText("NO STATS TO SAVE!!!");
@@ -324,7 +328,7 @@ public class SimulationPresenter implements MapChangeListener {
 
 
     public void animalButtonPressed(int x, int y) {
-        System.out.println(x + " " + y);
+//        System.out.println(x + " " + y);
         Vector2d position = new Vector2d(x,y);
         if (!map.isOccupiedByAnimal(position)) {
             this.observedAnimal = null;

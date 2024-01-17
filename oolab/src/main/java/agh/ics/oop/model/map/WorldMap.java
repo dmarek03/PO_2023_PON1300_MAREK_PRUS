@@ -66,6 +66,7 @@ public interface WorldMap extends MoveValidator {
     void notifyObservers(String message);
 
     int getWidth();
+    int getHeight();
 
     boolean isOccupiedByGrass(Vector2d position);
 

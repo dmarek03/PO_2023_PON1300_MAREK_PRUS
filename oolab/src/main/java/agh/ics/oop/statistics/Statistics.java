@@ -60,7 +60,7 @@ public class Statistics {
         AllAnimalDescendants animalDescendants = new AllAnimalDescendants(animal);
         this.numberOfDescendants = animalDescendants.countAllDescendants();
         if(animal.isDead()){
-            this.dateOfDeath = animal.getAge();
+            this.dateOfDeath = animal.getDeathDate();
         }
     }
 

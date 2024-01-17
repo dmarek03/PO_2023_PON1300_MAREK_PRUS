@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            minHeight="580" minWidth="500"
+            fx:controller="agh.ics.oop.presenter.SimulationInitializer">
+
+    <center>
+
+        <VBox spacing="10">
+
+            <Label text="Config Name"/>
+            <TextField fx:id="configName" promptText="Name"/>
+
+            <Button text="Accept" onAction="#onAcceptClicked"/>
+
+        </VBox>
+    </center>
+</BorderPane>

@@ -2,4 +2,5 @@
 
 Zwierzęta :
 Dominik -> Bolas
+
 Paweł -> Misiomysz

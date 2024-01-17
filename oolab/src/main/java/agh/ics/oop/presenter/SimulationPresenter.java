@@ -1,30 +1,29 @@
 package agh.ics.oop.presenter;
 
-import agh.ics.oop.Simulation;
-import agh.ics.oop.Statistics;
-import agh.ics.oop.model.*;
-import agh.ics.oop.view.WorldElementBox;
+import agh.ics.oop.model.map.mapUtils.Vector2d;
+import agh.ics.oop.simulations.Simulation;
+import agh.ics.oop.statistics.Statistics;
+import agh.ics.oop.model.elements.Animal;
+import agh.ics.oop.model.elements.WorldElement;
+import agh.ics.oop.model.frameworks.FileDisplay;
+import agh.ics.oop.model.map.mapUtils.Boundary;
+import agh.ics.oop.model.frameworks.MapChangeListener;
+import agh.ics.oop.model.map.StandardMap;
+import agh.ics.oop.model.map.WorldMap;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.util.Duration;
-import javafx.geometry.Pos;
-import javafx.scene.control.Label;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.TextAlignment;
 
 import java.util.*;
 import java.util.List;
@@ -38,13 +37,7 @@ public class SimulationPresenter implements MapChangeListener {
     private GridPane mapGrid;
 
     @FXML
-    private Button startButton;
-
-    @FXML
-    private Button stopButton;
-
-    @FXML
-    private Label animalstatInfo;
+    private Label animalStatInfo = new Label();
 
     @FXML
     private Label mapStatInfo;
@@ -55,7 +48,6 @@ public class SimulationPresenter implements MapChangeListener {
     public Thread presenterThread;
 
     public Simulation sim;
-    private boolean isRunning = true;
 
     private boolean firstDraw = true;
 
@@ -68,6 +60,16 @@ public class SimulationPresenter implements MapChangeListener {
 
     private Animal observedAnimal = null;
 
+    private boolean mapStatsVisibility = false;
+
+    private List<Animal> bestGenome = new ArrayList<>();
+
+    private List<Vector2d> grassPreffered = new ArrayList<>();
+    private List<Vector2d> oldGrassPreffered = new ArrayList<>();
+
+
+    private FileDisplay displayer;
+
     public void setMeasures(Vector2d measures) {
 
         int sceneWidth = measures.getX();
@@ -78,8 +80,9 @@ public class SimulationPresenter implements MapChangeListener {
         int horCells = Math.abs(bounds.upperright().getX() - bounds.lowerleft().getX()) + 2;
         System.out.println(horCells);
         int vertCells = Math.abs(bounds.upperright().getY() - bounds.lowerleft().getY()) + 2;
-        this.cellWidth = Math.min(((sceneWidth) / (horCells)),((sceneHeight) / (vertCells)));
-        this.cellHeight = Math.min(((sceneWidth) / (horCells)),((sceneHeight) / (vertCells)));
+        int min = Math.min(((sceneWidth) / (horCells)), ((sceneHeight) / (vertCells)));
+        this.cellWidth = min;
+        this.cellHeight = min;
 
         System.out.println("Measures Initialized " + cellWidth + " " + cellHeight);
 
@@ -123,7 +126,6 @@ public class SimulationPresenter implements MapChangeListener {
             Vector2d lowerleft = bounds.lowerleft();
             Vector2d upperright = bounds.upperright().add(new Vector2d(1,1));
 
-            System.out.println("IN DRAW: " + cellHeight + " " + cellWidth);
 
             int height = cellHeight;
             int width = cellWidth;
@@ -153,25 +155,7 @@ public class SimulationPresenter implements MapChangeListener {
 
             for (int i = lowerleft.getX(); i < upperright.getX(); i++) {
                 for (int j = lowerleft.getY(); j < upperright.getY(); j++) {
-
-                    Canvas canvas = createCanvas("/ground.png", i, j);
-                    mapGrid.add(canvas, i - lowerleft.getX() + 1, upperright.getY() - j);
-
-                    Vector2d position = new Vector2d(i, j);
-
-                    WorldElement element;
-
-                    if (map.isOccupiedByAnimal(position)) {
-                        element = map.strongestAnimalAt(position);
-                    } else if (map.isOccupiedByGrass(position)) {
-                        element = map.grassAt(position);
-                    } else {
-                        continue;
-                    }
-
-                    canvas = createCanvas(element.path(), i, j);
-                    mapGrid.add(canvas, i - lowerleft.getX() + 1, upperright.getY() - j);
-
+                    updatePosition(i,j);
                 }
             }
 
@@ -185,6 +169,8 @@ public class SimulationPresenter implements MapChangeListener {
     public void mapChanged(WorldMap worldMap, String message) {
 
         String vector = message.split(" ")[0];
+
+        this.grassPreffered = map.getPreferred();
 
         if (Objects.equals(vector, "Day")) {
             Platform.runLater(() -> {
@@ -205,17 +191,13 @@ public class SimulationPresenter implements MapChangeListener {
             });
             return;
         }
-//        System.out.println(vector);
         String[] xy = vector.split(",");
-//        System.out.println(xy[0].substring(1) + " " + xy[1].substring(0,xy[1].length() - 1));
         int x = Integer.parseInt(xy[0].substring(1));
         int y = Integer.parseInt(xy[1].substring(0,xy[1].length() - 1));
-//        System.out.println(xy[0] + " " + xy[1]);
-
-//        System.out.println(message);
 
         Platform.runLater(() -> {
             if (firstDraw) {
+                displayer = new FileDisplay("oolab/mapLogs/" + map.getId().toString() + ".log");
                 drawMap();
                 firstDraw = false;
             } else {
@@ -226,18 +208,32 @@ public class SimulationPresenter implements MapChangeListener {
             timeline.play();
         });
 
-        Platform.runLater(() -> {
-            Statistics stat = new Statistics((StandardMap) map);
-            mapStatInfo.setText(stat.showMapStats());
+        if (mapStatsVisibility) {
+            Platform.runLater(() -> {
+                Statistics stat = new Statistics((StandardMap) map);
+                mapStatInfo.setText(stat.showMapStats() + "\n\n====================\n");
+                bestGenome = stat.getAnimalsWithTheMostPopularGenotype();
 
-            Timeline timeline = new Timeline(new KeyFrame(Duration.millis(500), event -> {}));
-            timeline.play();
-        });
-
-
-
+                Timeline timeline = new Timeline(new KeyFrame(Duration.millis(500), event -> {}));
+                timeline.play();
+            });
+        }
 
     }
+
+
+    private void clearGridCell(int col, int row) {
+        List<Node> toRemove = new ArrayList<>();
+
+        for (Node node : mapGrid.getChildren()) {
+            if (GridPane.getColumnIndex(node) == col && GridPane.getRowIndex(node) == row) {
+                toRemove.add(node);
+            }
+        }
+
+        mapGrid.getChildren().removeAll(toRemove);
+    }
+
 
     private void updatePosition(int i, int j) {
 
@@ -250,22 +246,49 @@ public class SimulationPresenter implements MapChangeListener {
 
         WorldElement element;
 
+
+        clearGridCell(i - lowerleft.getX() + 1,upperright.getY() - j);
+        Canvas canvas = createCanvas("/fields/ground.png", i, j);
+        mapGrid.add(canvas, i - lowerleft.getX() + 1, upperright.getY() - j);
+
+
+        if ((grassPreffered.contains(position)) && (mapStatsVisibility)) {
+            canvas = createCanvas("/masks/grassPreferred.png", i, j);
+            mapGrid.add(canvas, i - lowerleft.getX() + 1, upperright.getY() - j);
+        }
+
+
         if (map.isOccupiedByAnimal(position)) {
             element = map.strongestAnimalAt(position);
         } else if (map.isOccupiedByGrass(position)) {
             element = map.grassAt(position);
         } else {
-            Canvas canvas = createCanvas("/ground.png", i, j);
-            mapGrid.add(canvas, i - lowerleft.getX() + 1, upperright.getY() - j);
-
-
-//            Button currButton = createButton("/ground.png",i,j);
-//            mapGrid.add(currButton, i - lowerleft.getX() + 1, upperright.getY() - j);
+            canvas = null;
+            System.gc();
             return;
         }
-        Canvas canvas = createCanvas(element.path(), i, j);
+        canvas = createCanvas(element.path(), i, j);
         mapGrid.add(canvas, i - lowerleft.getX() + 1, upperright.getY() - j);
+        if (map.isOccupiedByAnimal(position)) {
+            Animal animal = (Animal) element;
 
+            Statistics mapStat = new Statistics((StandardMap) map);
+            bestGenome = mapStat.getAnimalsWithTheMostPopularGenotype();
+
+            if ((mapStatsVisibility) && (bestGenome.contains(animal))) {
+                canvas = createCanvas("/masks/bestGenome.png", i, j);
+                mapGrid.add(canvas, i - lowerleft.getX() + 1, upperright.getY() - j);
+            }
+            if (animal == this.observedAnimal) {
+                canvas = createCanvas("/masks/chosenAnimal.png", i, j);
+                mapGrid.add(canvas, i - lowerleft.getX() + 1, upperright.getY() - j);
+            }
+
+            canvas = createCanvas(animal.secondaryPath(), i, j);
+            mapGrid.add(canvas, i - lowerleft.getX() + 1, upperright.getY() - j);
+        }
+        canvas = null;
+        System.gc();
 
     }
 
@@ -278,21 +301,42 @@ public class SimulationPresenter implements MapChangeListener {
         sim.stopSimulation();
     }
 
+
     public void onSaveStatsButtonClicked() {
         System.out.println("Here will be saving stats");
+
+        String text = "";
+
+        if (mapStatsVisibility) {
+            text += mapStatInfo.getText();
+        }
+        if (observedAnimal != null) {
+            text += "\n" + animalStatInfo.getText() + "\n\n====================\n\n";
+        }
+
+        if (text != "") {
+            displayer.write(text);
+        } else {
+            mapStatInfo.setText("NO STATS TO SAVE!!!");
+        }
+
     }
 
 
     public void animalButtonPressed(int x, int y) {
         System.out.println(x + " " + y);
         Vector2d position = new Vector2d(x,y);
-        if (!map.isOccupiedByAnimal(position)) {return;}
-        Animal animal = map.strongestAnimalAt(position);
-        this.observedAnimal = animal;
+        if (!map.isOccupiedByAnimal(position)) {
+            this.observedAnimal = null;
+            animalStatInfo.setText("");
+            return;
+        }
+
+        this.observedAnimal = map.strongestAnimalAt(position);
 
         Statistics stat = new Statistics(observedAnimal);
 
-        animalstatInfo.setText(stat.showAnimalStatistics());
+        animalStatInfo.setText(stat.showAnimalStatistics());
 
     }
 
@@ -300,15 +344,38 @@ public class SimulationPresenter implements MapChangeListener {
         if (this.observedAnimal == null) {return;}
         Statistics stat = new Statistics(observedAnimal);
 
-        animalstatInfo.setText(stat.showAnimalStatistics());
+        animalStatInfo.setText(stat.showAnimalStatistics());
     }
 
 
+    public void onClickStatsToggle() {
+        if (!mapStatsVisibility) {
+            Statistics stat = new Statistics((StandardMap) map);
+            oldGrassPreffered = grassPreffered;
+            mapStatInfo.setText(stat.showMapStats() + "\n--------------------\n");
+            mapStatsVisibility = true;
+        } else {
+            mapStatInfo.setText("");
+            mapStatsVisibility = false;
+        }
+
+        List<Vector2d> sumGrassPreffered = new ArrayList<>();
+
+        for (Vector2d position :  oldGrassPreffered) {
+            if (sumGrassPreffered.contains(position)) {continue;}
+            sumGrassPreffered.add(position);
+        }
+        for (Vector2d position :  grassPreffered) {
+            if (sumGrassPreffered.contains(position)) {continue;}
+            sumGrassPreffered.add(position);
+        }
+        for (Vector2d position :  sumGrassPreffered) {
+            mapChanged(map,position.toString());
+        }
 
 
 
-
-
+    }
 
 
 }

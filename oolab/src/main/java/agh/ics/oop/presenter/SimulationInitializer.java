@@ -1,13 +1,15 @@
 package agh.ics.oop.presenter;
 
-import agh.ics.oop.Simulation;
-import agh.ics.oop.model.*;
+import agh.ics.oop.model.map.mapUtils.Vector2d;
+import agh.ics.oop.simulations.Simulation;
+import agh.ics.oop.model.map.StandardMap;
+import agh.ics.oop.model.map.WorldMap;
+import agh.ics.oop.simulations.SimulationEngine;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
@@ -18,8 +20,6 @@ import java.util.List;
 
 public class SimulationInitializer {
 
-    @FXML
-    private TextField simTimeField;
 
     @FXML
     private TextField mapHeightField;
@@ -52,16 +52,14 @@ public class SimulationInitializer {
     private TextField mapAnimalGeneField;
 
     @FXML
-    private CheckBox standardPlant;
+    private TextField timeField;
+
 
     @FXML
-    private CheckBox lifegivingCorpses;
+    private ChoiceBox<String> mapTypeChoiceBox;
 
     @FXML
-    private CheckBox standardMutation;
-
-    @FXML
-    private CheckBox switchMutation;
+    private ChoiceBox<String> mutationTypeChoiceBox;
 
     @FXML
     private TextField mapPixelWidth;
@@ -69,9 +67,6 @@ public class SimulationInitializer {
     @FXML
     private TextField mapPixelHeight;
 
-    @FXML
-    private Button StopStartSimulationButton;
-    private boolean isRunning =true;
 
 
     private double mapWidth = 1000;
@@ -81,7 +76,6 @@ public class SimulationInitializer {
     @FXML
     private void onSimulationStartClicked() throws IOException, InterruptedException {
 
-        int time = Integer.parseInt(simTimeField.getText());
         int height = Integer.parseInt(mapHeightField.getText());
         int width = Integer.parseInt(mapWidthField.getText());
         int grassNumber = Integer.parseInt(mapGrassNumberField.getText());
@@ -92,26 +86,19 @@ public class SimulationInitializer {
         int reproductionEnergy = Integer.parseInt(mapAnimalCopulateEnergyField.getText());
         double copulateEnergy = Double.parseDouble(mapAnimalCreateEnergyField.getText());
         int geneLength = Integer.parseInt(mapAnimalGeneField.getText());
-        boolean standardPlants = standardPlant.isSelected();
-        boolean corpses = lifegivingCorpses.isSelected();
-        boolean standardMutations = standardMutation.isSelected();
-        boolean switchMutations = switchMutation.isSelected();
+        int time = Integer.parseInt(timeField.getText());
+        String mapType = mapTypeChoiceBox.getValue();
+        String mutationType = mutationTypeChoiceBox.getValue();
         this.mapWidth = Integer.parseInt(mapPixelWidth.getText());
         this.mapHeight = Integer.parseInt(mapPixelHeight.getText());
 
-//        System.out.println(time + ", " + height + ", " + width + ", " + grassNumber + ", " + grassEnergy + ", " + userGrass + ", " + animalNumber + ", " + copulateEnergy);
-
         double size = 0.8;
-        WorldMap map = new StandardMap(width, height, grassNumber, grassEnergy, size, userGrass,copulateEnergy,reproductionEnergy);
-
-//        ConsoleMapDisplay observer = new ConsoleMapDisplay();
-//        map.addObserver(observer);
-
+        WorldMap map = new StandardMap(width, height, grassNumber, grassEnergy, size, userGrass,copulateEnergy,reproductionEnergy, mapType);
 
 
         Stage newStage = new Stage();
         FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getClassLoader().getResource("simulation.fxml"));
+        loader.setLocation(getClass().getClassLoader().getResource("fxmls/simulation.fxml"));
         BorderPane viewRoot = loader.load();
         SimulationPresenter presenter = loader.getController();
 
@@ -122,7 +109,7 @@ public class SimulationInitializer {
         configureStage(newStage, viewRoot);
 
 
-        presenter.setMeasures(new Vector2d((int)mapWidth - 400,(int)mapHeight - 75));
+        presenter.setMeasures(new Vector2d((int)mapWidth - 300,(int)mapHeight - 50));
 
 
         List<Vector2d> positions = new ArrayList<>();
@@ -132,12 +119,16 @@ public class SimulationInitializer {
             positions.add(new Vector2d(x,y));
         }
 
-
-        Simulation sim = new Simulation(map,positions,time,geneLength, startEnergy, copulateEnergy, reproductionEnergy);
+        Simulation sim = new Simulation(map,positions,geneLength, startEnergy, copulateEnergy, reproductionEnergy, mutationType, time);
         presenter.sim = sim;
-        presenter.presenterThread = new Thread(sim);
+
+
+        SimulationEngine SE = new SimulationEngine(List.of(sim));
+        SE.runAsyncInThreadPool();
+
         Platform.runLater(newStage::show);
         presenter.presenterThread.start();
+
 
 
 
@@ -148,12 +139,6 @@ public class SimulationInitializer {
         primaryStage.setTitle("Simulation app");
         primaryStage.setWidth(mapWidth);
         primaryStage.setHeight(mapHeight);
-//        primaryStage.minWidthProperty().bind(viewRoot.minWidthProperty());
-//        primaryStage.minHeightProperty().bind(viewRoot.minHeightProperty());
-
-//        primaryStage.setMaximized(true);
-
-//        Image image = new Image(backgroung_path);
 
     }
 

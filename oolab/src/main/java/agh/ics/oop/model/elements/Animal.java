@@ -51,7 +51,7 @@ public class Animal implements WorldElement {
 
     }
 
-    public Animal(Vector2d newPosition,MapDirection orientation ,int energy,int numberOfGenes, boolean swapMutation){
+    public Animal(Vector2d newPosition,MapDirection orientation ,int energy,int numberOfGenes, boolean swapMutation, double copEnergy){
         this.numberOfGenes = numberOfGenes;
         this.currentPosition = newPosition;
         this.currentOrientation = orientation;
@@ -63,7 +63,7 @@ public class Animal implements WorldElement {
     }
 
     // Using during copulation
-    public Animal(Vector2d newPosition ,MapDirection currentOrientation,int energy, Genotype genotype){
+    public Animal(Vector2d newPosition ,MapDirection currentOrientation,int energy, Genotype genotype, double copEnergy){
         this.currentPosition = newPosition;
         this.currentOrientation = currentOrientation;
         this.animalEnergy = energy;
@@ -106,7 +106,7 @@ public class Animal implements WorldElement {
             childGenotype.genesSubstitution();
         }
 
-        Animal newborn = new Animal(mother.currentPosition, mother.currentOrientation, childEnergy, childGenotype);
+        Animal newborn = new Animal(mother.currentPosition, mother.currentOrientation, childEnergy, childGenotype,this.energyToCopulation);
 
         this.allChildren.add(newborn);
         this.incrementNumberOfChildren();

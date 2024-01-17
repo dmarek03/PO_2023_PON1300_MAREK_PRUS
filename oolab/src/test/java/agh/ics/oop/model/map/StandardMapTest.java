@@ -18,7 +18,7 @@ public class StandardMapTest {
 
         );
         Animal animal = new Animal();
-        Animal animal1 = new Animal(positions.get(1), MapDirection.NORTH, 5, 5, false);
+        Animal animal1 = new Animal(positions.get(1), MapDirection.NORTH, 5, 5, false,0.3);
         List<Animal> animals = List.of(animal, animal1);
         for(Animal a : animals){
             map.place(a, false);
@@ -45,8 +45,8 @@ public class StandardMapTest {
     public void areAnimalsPlacedCorrectly(){
         StandardMap map = new StandardMap(10,10, 5, 5, 0.8, 3, 0.3, 10, "Normal");
         Animal animal =new Animal();
-        Animal animal1 = new Animal(new Vector2d(3, 5), MapDirection.NORTH, 5, 5, false);
-        Animal animal2 = new Animal(new Vector2d(20, 30), MapDirection.EAST, 4, 3, false);
+        Animal animal1 = new Animal(new Vector2d(3, 5), MapDirection.NORTH, 5, 5, false,0.3);
+        Animal animal2 = new Animal(new Vector2d(20, 30), MapDirection.EAST, 4, 3, false,0.3);
         List<Animal> animals = List.of(animal, animal1, animal2);
 
         for(Animal a: animals){
@@ -62,9 +62,9 @@ public class StandardMapTest {
     public void isTheStrongestAnimalsFindingCorrectly(){
         StandardMap map = new StandardMap(10,10, 5, 5, 0.8, 3, 0.3, 10, "Normal");
         Animal animal  = new Animal();
-        Animal animal1 = new Animal(new Vector2d(2, 2), MapDirection.SOUTH, 100, 5, false);
-        Animal animal2 = new Animal(new Vector2d(2, 2), MapDirection.WEST, 100, 6, false);
-        Animal animal3 = new Animal(new Vector2d(2, 2), MapDirection.EAST, 50, 5, false);
+        Animal animal1 = new Animal(new Vector2d(2, 2), MapDirection.SOUTH, 100, 5, false,0.3);
+        Animal animal2 = new Animal(new Vector2d(2, 2), MapDirection.WEST, 100, 6, false,0.3);
+        Animal animal3 = new Animal(new Vector2d(2, 2), MapDirection.EAST, 50, 5, false,0.3);
         List<Animal> animals = List.of(animal, animal1, animal2, animal3);
         for(Animal a: animals){
             map.place(a, false);
@@ -96,9 +96,9 @@ public class StandardMapTest {
         List<Integer> moves = List.of(0,1,2,3,4,5,6,7,0,1,2,3);
 
         Animal animal  = new Animal();
-        Animal animal1 = new Animal(positions.get(1), MapDirection.SOUTH, 5, 5, false);
-        Animal animal2 = new Animal(positions.get(2), MapDirection.WEST, 4, 6, false);
-        Animal animal3 = new Animal(positions.get(3), MapDirection.EAST, 4, 5, false);
+        Animal animal1 = new Animal(positions.get(1), MapDirection.SOUTH, 5, 5, false,0.3);
+        Animal animal2 = new Animal(positions.get(2), MapDirection.WEST, 4, 6, false,0.3);
+        Animal animal3 = new Animal(positions.get(3), MapDirection.EAST, 4, 5, false,0.3);
         List<Animal> animals = List.of(animal, animal1, animal2, animal3);
 
         for(Animal a: animals){

@@ -19,7 +19,7 @@ public class SimulationIntegrationTest {
         List<Vector2d> positions = List.of(new Vector2d(0,5), new Vector2d(5, 5), new Vector2d(3, 4), new Vector2d(3, 2));
         for(Vector2d p: positions){
             Genotype genotype = new Genotype(7, 5, List.of(0, 0,0, 0, 0));
-            map.place( new Animal(p, MapDirection.NORTH, 5, genotype), false);
+            map.place( new Animal(p, MapDirection.NORTH, 5, genotype,0.3), false);
         }
         Simulation simulation = new Simulation(map, List.of(new Vector2d(-1, 0)), 11, 7,0.3,4, "Full random", 5);
         for(int i = 0; i< 4 ;i++){

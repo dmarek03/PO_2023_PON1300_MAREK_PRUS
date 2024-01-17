@@ -72,6 +72,12 @@ public class SimulationInitializer {
     private double mapWidth = 1000;
     private double mapHeight = 600;
 
+    private SimulationEngine SE;
+
+    public void setSE(SimulationEngine SE) {
+        this.SE = SE;
+    }
+
 
     @FXML
     private void onSimulationStartClicked() throws IOException, InterruptedException {
@@ -93,7 +99,7 @@ public class SimulationInitializer {
         this.mapHeight = Integer.parseInt(mapPixelHeight.getText());
 
         double size = 0.8;
-        WorldMap map = new StandardMap(width, height, grassNumber, grassEnergy, size, userGrass,copulateEnergy,reproductionEnergy, mapType);
+        WorldMap map = new StandardMap(width, height, grassNumber, grassEnergy, size, userGrass, copulateEnergy,reproductionEnergy, mapType);
 
 
         Stage newStage = new Stage();
@@ -121,10 +127,11 @@ public class SimulationInitializer {
 
         Simulation sim = new Simulation(map,positions,geneLength, startEnergy, copulateEnergy, reproductionEnergy, mutationType, time);
         presenter.sim = sim;
+        Thread simThread = new Thread(sim);
+        presenter.presenterThread = simThread;
 
 
-        SimulationEngine SE = new SimulationEngine(List.of(sim));
-        SE.runAsyncInThreadPool();
+        SE.addThread(simThread);
 
         Platform.runLater(newStage::show);
         presenter.presenterThread.start();

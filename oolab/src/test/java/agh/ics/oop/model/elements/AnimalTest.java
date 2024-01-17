@@ -13,7 +13,7 @@ public class AnimalTest {
     public void isAnimalAtPosition(){
         Animal animal = new Animal();
         Vector2d pos = new Vector2d(2, 4);
-        Animal animal1 = new Animal(pos, MapDirection.NORTH, 5, 5, false);
+        Animal animal1 = new Animal(pos, MapDirection.NORTH, 5, 5, false,0.3);
         assertFalse(animal.isAt(pos));
         assertTrue(animal1.isAt(pos));
 
@@ -59,7 +59,7 @@ public class AnimalTest {
     @Test
     public void shouldAnimalEnergyChangesCorrectly(){
         Animal animal = new Animal();
-        Animal animal1 = new Animal(new Vector2d(3, 4), MapDirection.WEST, 50, 6,false);
+        Animal animal1 = new Animal(new Vector2d(3, 4), MapDirection.WEST, 50, 6,false,0.3);
         Animal animal2 = new Animal();
         List<Animal>  animals = List.of(animal, animal1, animal2);
         List<Integer> expectedAnimalEnergy = List.of(120, 34, 0);
@@ -85,8 +85,8 @@ public class AnimalTest {
         Genotype fatherGenotype = new Genotype(fatherGenome);
         Genotype motherGenotype = new Genotype(motherGenome);
 
-        Animal father = new Animal(new Vector2d(2, 2),MapDirection.NORTH, 15, fatherGenotype);
-        Animal mother = new Animal(new Vector2d(2, 2),MapDirection.NORTH, 10, motherGenotype);
+        Animal father = new Animal(new Vector2d(2, 2),MapDirection.NORTH, 15, fatherGenotype,0.3);
+        Animal mother = new Animal(new Vector2d(2, 2),MapDirection.NORTH, 10, motherGenotype,0.3);
 
         Animal child = father.copulate(mother);
         int expectedChildEnergy = 7;

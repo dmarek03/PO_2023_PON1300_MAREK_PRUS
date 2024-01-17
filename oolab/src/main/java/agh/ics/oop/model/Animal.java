@@ -1,5 +1,6 @@
 package agh.ics.oop.model;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import static java.lang.Math.max;
@@ -22,9 +23,9 @@ public class Animal implements WorldElement {
 
     private int activatedGen = 0;
 
-    public ArrayList<Animal> allChildren = new ArrayList<>();
+    public List<Animal> allChildren = new ArrayList<>();
 
-    public ArrayList<Animal> parents;
+    public List<Animal> parents;
 
 
 
@@ -72,7 +73,7 @@ public class Animal implements WorldElement {
 
     public Animal copulate(Animal mother){
         int childEnergy = (int)((energyToCopulation)*(mother.animalEnergy + this.animalEnergy));
-        ArrayList<Integer> childGenes;
+        List<Integer> childGenes;
         if(this.animalEnergy > mother.animalEnergy){
             childGenes = divideGenotype(this, mother);
 
@@ -101,11 +102,11 @@ public class Animal implements WorldElement {
 
     }
 
-    private ArrayList<Integer> divideGenotype(Animal animal1, Animal animal2) {
+    private List<Integer> divideGenotype(Animal animal1, Animal animal2) {
         int total_energy = animal1.animalEnergy + animal2.animalEnergy;
         Random random = new Random();
         boolean isRight = 1 == random.nextInt(2);
-        ArrayList<Integer> genes = new ArrayList<>();
+        List<Integer> genes = new ArrayList<>();
         int divideIdx = (animal1.animalEnergy*numberOfGenes / total_energy);
         if (isRight){
             for(int i =0; i < numberOfGenes;i++){
@@ -187,7 +188,7 @@ public class Animal implements WorldElement {
     public int getChildren() {
         return children;
     }
-    public ArrayList<Animal> getParents(){
+    public List<Animal> getParents(){
         return parents;
     }
 

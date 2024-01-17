@@ -101,4 +101,7 @@ public interface WorldMap extends MoveValidator {
 
     Animal strongestAnimalAt(Vector2d position);
 
+    void updateAll();
+
+    void moveAnimal(Animal currentAnimal);
 }

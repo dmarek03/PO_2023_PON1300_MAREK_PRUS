@@ -75,6 +75,16 @@
             <CheckBox text="Standard"  fx:id="standardMutation"/>
             <CheckBox text="Switch"  fx:id="switchMutation"/>
 
+            <HBox spacing="10">
+                <Label text="Pixel width of window:"/>
+                <TextField fx:id="mapPixelWidth" promptText="int"/>
+            </HBox>
+
+            <HBox spacing="10">
+                <Label text="Pixel height of window:"/>
+                <TextField fx:id="mapPixelHeight" promptText="int"/>
+            </HBox>
+
 
 
             <Button text="Start" onAction="#onSimulationStartClicked"/>

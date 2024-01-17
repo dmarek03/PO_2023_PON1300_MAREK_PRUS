@@ -18,6 +18,10 @@ public class StandardMap implements WorldMap{
 
     private final  int userGrass;
 
+    private final double copulateEnergy;
+
+    private final int reproductionEnergy;
+
     private final UUID id;
 
     private final double size;
@@ -28,10 +32,16 @@ public class StandardMap implements WorldMap{
     private boolean[][] grassMatrix;
     private boolean[][] animalMatrix;
 
+    Deque<Animal> dead = new ArrayDeque<>();
+
+    public int day = 0;
+
+    private Map<Vector2d,Boolean> todayUpdated = new HashMap<>();
+
     private Map<Vector2d,List<Animal>> animalMap = new HashMap<>();
     private Map<Vector2d,Grass> grassMap = new HashMap<>();
 
-    public StandardMap(int width, int height, int grassNumber,int grassEnergy, double size, int userGrass) {
+    public StandardMap(int width, int height, int grassNumber,int grassEnergy, double size, int userGrass, double copulateEnergy,int reproductionEnergy) {
         this.width = width;
         this.height = height;
         this.grassNumber = grassNumber;
@@ -40,6 +50,8 @@ public class StandardMap implements WorldMap{
         this.userGrass = userGrass;
         this.lowerLeftLimit = new Vector2d(0, 0);
         this.upperRightLimit = new Vector2d(width-1, height-1);
+        this.copulateEnergy = copulateEnergy;
+        this.reproductionEnergy = reproductionEnergy;
         this.grassMatrix = new boolean[width][height];
         this.animalMatrix = new boolean[width][height];
         for (int x = 0; x < width; x++) {
@@ -53,7 +65,11 @@ public class StandardMap implements WorldMap{
 
     }
 
+    private List<Animal> allEverLivedAnimals = new ArrayList<>();
 
+    public List<Animal> getAllEverLivedAnimals() {
+        return allEverLivedAnimals;
+    }
 
     public void addGrassBool(Grass grass) {
         Vector2d position = grass.getPosition();
@@ -61,6 +77,7 @@ public class StandardMap implements WorldMap{
         int x = position.getX();
         int y = position.getY();
         grassMatrix[x][y] = true;
+        this.todayUpdated.put(position,true);
         mapChanged("%s Grass placed".formatted(position));
     }
 
@@ -70,11 +87,13 @@ public class StandardMap implements WorldMap{
         int x = position.getX();
         int y = position.getY();
         grassMatrix[x][y] = false;
+        this.todayUpdated.put(position,true);
         mapChanged("%s Grass removed".formatted(position));
     }
 
 
     public void addAnimalBool(Animal animal) {
+        allEverLivedAnimals.add(animal);
         Vector2d position = animal.getPosition();
         List<Animal> templist = animalMap.get(position);
         if (templist == null) {
@@ -85,6 +104,7 @@ public class StandardMap implements WorldMap{
         int x = position.getX();
         int y = position.getY();
         animalMatrix[x][y] = true;
+        this.todayUpdated.put(position,true);
         mapChanged("%s Animal placed".formatted(position));
     }
 
@@ -105,6 +125,7 @@ public class StandardMap implements WorldMap{
             animalMatrix[x][y] = false;
         }
         animalMap.put(position,templist);
+        this.todayUpdated.put(position,true);
         mapChanged("%s Animal removed".formatted(position));
 
     }
@@ -394,4 +415,151 @@ public class StandardMap implements WorldMap{
     public void removeFromFertilized(Vector2d pos) {
         this.fertilized.remove(pos);
     }
+
+
+
+
+    private int stage = 0;
+    public void updateAll() {
+        int maxStage = 4 + animals.size();
+//        System.out.println(maxStage + " " + stage);
+//        System.out.println(animals + " " + animals.size());
+        if (stage == 0) {
+            deadRemoval();
+            stage++;
+        } else if (stage == maxStage - 3) {
+            eatingAndCopulating();
+//            System.out.println("Gotten to eating and copulating");
+            stage++;
+        } else if (stage == maxStage - 2) {
+            setGrasses(updateGrass());
+//            System.out.println("Gotten to grass updating");
+            stage++;
+        } else if (stage == maxStage - 1) {
+            day++;
+            mapChanged("Day " + day);
+//            System.out.println("Gotten to day increase");
+            stage = 0;
+        } else {
+            Animal mover = animals.get(0);
+            if (!mover.isDead()) {
+                moveAnimal(mover);
+//                System.out.println("Gotten to animal number " + (stage - 1));
+            }
+            stage++;
+        }
+
+    }
+
+    private void deadRemoval() {
+        if (!dead.isEmpty()) {
+            Animal curr = dead.removeFirst();
+            getAnimals().remove(curr);
+            removeAnimalBool(curr);
+            removeFromFertilized(curr.getPosition());
+            int count = 0;
+            while (day - curr.getAge() >= 2) {
+                if (dead.isEmpty()) {break;}
+                curr = dead.removeFirst();
+                getAnimals().remove(curr);
+                removeAnimalBool(curr);
+                removeFromFertilized(curr.getPosition());
+                count += 1;
+            }
+            if (count == 0) {
+                if (day - curr.getAge() < 2) {
+                    dead.addFirst(curr);
+                    getAnimals().add(curr);
+                    addAnimalBool(curr);
+                }
+            }
+        }
+    }
+
+    public void moveAnimal(Animal currentAnimal) {
+        Genotype genotype = currentAnimal.getGenotype();
+        List<Integer> genes = genotype.getGenes();
+        int moveInd = day % genes.size();
+        int move = genes.get(moveInd);
+        move(currentAnimal,move);
+        currentAnimal.incrementAge();
+        if (currentAnimal.isDead()) {
+            animals.remove(currentAnimal);
+            addToFertilized(currentAnimal.getPosition());
+            dead.addLast(currentAnimal);
+        }
+    }
+
+
+    private void eatingAndCopulating() {
+            Map<Vector2d,List<Animal>> orderedMap = new HashMap<>();
+
+            for (Animal animal : animals) {
+                List<Animal> tempList = new ArrayList<>();
+                List<Animal> atPos = orderedMap.get(animal.getPosition());
+                if (atPos != null) {
+                    tempList = atPos;
+                }
+                tempList.add(animal);
+                orderedMap.put(animal.getPosition(),tempList);
+            }
+
+            for (Map.Entry<Vector2d,List<Animal>> entry : orderedMap.entrySet()) {
+                Vector2d position = entry.getKey();
+                List<Animal> currAnimals = entry.getValue();
+
+                Animal strongest = currAnimals.get(0);
+                Animal second = null;
+
+                if (currAnimals.size() > 1) {
+
+                    Competition currComp = new Competition((ArrayList<Animal>) currAnimals);
+                    List<Animal> strength = currComp.getTheStrongestCouple();
+
+                    strongest = strength.get(0);
+                    second = strength.get(1);
+                }
+
+//                boolean grassed = false;
+                Grass grass = null;
+                for (Grass g : getGrasses()) {
+                    if (g.getPosition().equals(position)) {
+//                        grassed = true;
+                        grass = g;
+                        break;
+                    }
+
+                }
+
+//                System.out.println(position + " " + map.getGrasses());
+//                System.out.println(grass);
+
+//                pierwszy zawsze je
+                if (grass != null) {
+                    strongest.changeEnergy(grass.getGrassEnergy());
+                    strongest.incrementNumberOfConsumedGrass();
+//                    System.out.println("Grass " + grass + " deleted from " + grass.getPosition() + " and position is " + position);
+                    removeGrass(grass);
+                    removeGrassBool(grass);
+                }
+
+//                rozmnazanie
+                if ((second != null) && (second.getAnimalEnergy() >= reproductionEnergy)) {
+//                    System.out.println("Animals at position " + second.getPosition() + " are reproducing");
+
+                    Animal newborn = strongest.copulate(second);
+//                    System.out.println(strongest.getGenotype() + " " + strongest.numberOfGenes);
+//                    System.out.println(second.getGenotype() + " " + second.numberOfGenes);
+//                    System.out.println("FATHER >>> " + strongest.AnimalToString1());
+//                    System.out.println("MOTHER >>> " + second.AnimalToString1());
+//                    System.out.println("CHILD >>> " + newborn.AnimalToString1());
+                    place(newborn,true);
+                    animals.add(newborn);
+
+                }
+
+            }
+    }
+
+
 }

@@ -1,6 +1,7 @@
 package agh.ics.oop.model;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.UUID;
 
 import static java.lang.Math.max;
 
@@ -25,6 +26,8 @@ public class Animal implements WorldElement {
     public ArrayList<Animal> allChildren = new ArrayList<>();
 
     public ArrayList<Animal> parents;
+
+    public UUID id = UUID.randomUUID();
 
 
 
@@ -56,6 +59,8 @@ public class Animal implements WorldElement {
         this.age = 0;
         this.numberOfGenes = genotype.getNumberOfGenes();
     }
+
+
 
     public String orientationToString(){
         return this.currentOrientation.toString();
@@ -126,10 +131,7 @@ public class Animal implements WorldElement {
         return orientationToString()+" "+animalEnergy+" "+age+" "+children + " " + this.getPosition();
     }
     public String AnimalToString(){
-        if (this.isDead()) {
-            return "X";
-        }
-        return orientationToString();
+        return id.toString();
     }
 
     @Override

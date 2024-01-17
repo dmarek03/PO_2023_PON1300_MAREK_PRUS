@@ -64,10 +64,18 @@ public class SimulationInitializer {
     private CheckBox switchMutation;
 
     @FXML
+    private TextField mapPixelWidth;
+
+    @FXML
+    private TextField mapPixelHeight;
+
+    @FXML
     private Button StopStartSimulationButton;
     private boolean isRunning =true;
 
 
+    private double mapWidth = 1000;
+    private double mapHeight = 600;
 
 
     @FXML
@@ -81,18 +89,20 @@ public class SimulationInitializer {
         int userGrass = Integer.parseInt(mapGrassNewField.getText());
         int animalNumber = Integer.parseInt(mapAnimalNumberField.getText());
         int startEnergy = Integer.parseInt(mapAnimalEnergyField.getText());
-        int copulateEnergy = Integer.parseInt(mapAnimalCopulateEnergyField.getText());
-        double creationEnergy = Double.parseDouble(mapAnimalCreateEnergyField.getText());
+        int reproductionEnergy = Integer.parseInt(mapAnimalCopulateEnergyField.getText());
+        double copulateEnergy = Double.parseDouble(mapAnimalCreateEnergyField.getText());
         int geneLength = Integer.parseInt(mapAnimalGeneField.getText());
         boolean standardPlants = standardPlant.isSelected();
         boolean corpses = lifegivingCorpses.isSelected();
         boolean standardMutations = standardMutation.isSelected();
         boolean switchMutations = switchMutation.isSelected();
+        this.mapWidth = Integer.parseInt(mapPixelWidth.getText());
+        this.mapHeight = Integer.parseInt(mapPixelHeight.getText());
 
 //        System.out.println(time + ", " + height + ", " + width + ", " + grassNumber + ", " + grassEnergy + ", " + userGrass + ", " + animalNumber + ", " + copulateEnergy);
 
         double size = 0.8;
-        WorldMap map = new StandardMap(width, height, grassNumber, grassEnergy, size, userGrass);
+        WorldMap map = new StandardMap(width, height, grassNumber, grassEnergy, size, userGrass,copulateEnergy,reproductionEnergy);
 
 //        ConsoleMapDisplay observer = new ConsoleMapDisplay();
 //        map.addObserver(observer);
@@ -104,12 +114,15 @@ public class SimulationInitializer {
         loader.setLocation(getClass().getClassLoader().getResource("simulation.fxml"));
         BorderPane viewRoot = loader.load();
         SimulationPresenter presenter = loader.getController();
-//        presenter.extra = true;
+
 
         presenter.setWorldMap(map);
         map.addObserver(presenter);
 
         configureStage(newStage, viewRoot);
+
+
+        presenter.setMeasures(new Vector2d((int)mapWidth - 400,(int)mapHeight - 75));
 
 
         List<Vector2d> positions = new ArrayList<>();
@@ -120,11 +133,12 @@ public class SimulationInitializer {
         }
 
 
-        Simulation sim = new Simulation(map,positions,time,geneLength, startEnergy, creationEnergy, copulateEnergy);
+        Simulation sim = new Simulation(map,positions,time,geneLength, startEnergy, copulateEnergy, reproductionEnergy);
         presenter.sim = sim;
         presenter.presenterThread = new Thread(sim);
         Platform.runLater(newStage::show);
         presenter.presenterThread.start();
+
 
 
     }
@@ -132,10 +146,12 @@ public class SimulationInitializer {
         Scene scene = new Scene(viewRoot);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Simulation app");
+        primaryStage.setWidth(mapWidth);
+        primaryStage.setHeight(mapHeight);
 //        primaryStage.minWidthProperty().bind(viewRoot.minWidthProperty());
 //        primaryStage.minHeightProperty().bind(viewRoot.minHeightProperty());
 
-        primaryStage.setMaximized(true);
+//        primaryStage.setMaximized(true);
 
 //        Image image = new Image(backgroung_path);
 

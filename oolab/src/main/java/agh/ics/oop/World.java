@@ -17,7 +17,7 @@ public class World {
 
 
         System.out.println("\nSystem zakończył działanie");
-        StandardMap map = new StandardMap(10, 10, 10, 3, 0.8, 1);
+        StandardMap map = new StandardMap(10, 10, 10, 3, 0.8, 1, 0.3, 8);
         Animal animal = new Animal(new Vector2d(5, 5), MapDirection.NORTH, 59, 5);
         map.place(animal, true);
         ConsoleMapDisplay observer = new ConsoleMapDisplay();

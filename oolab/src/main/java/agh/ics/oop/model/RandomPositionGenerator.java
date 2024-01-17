@@ -82,14 +82,35 @@ public class RandomPositionGenerator implements Iterable {
             }
         } else {
             int counter = 0;
-            for (Map.Entry<Vector2d,Double> entry : possibs.entrySet()) {
-                if (counter == N) {break;}
-                double rand = Math.random();
-                if (rand <= entry.getValue()) {
-                    this.positions.add(entry.getKey());
-                    counter++;
+            List<Vector2d> newPossibs = new ArrayList<>();
+
+            for (int x = 0; x < maxWidth; x++) {
+                for (int y = 0; y < maxHeight; y++) {
+                    newPossibs.add(new Vector2d(x,y));
                 }
             }
+
+            while (counter < N) {
+                int randint = (int) (Math.random() * newPossibs.size());
+                double rand = Math.random();
+                Vector2d position = newPossibs.get(randint);
+                Double prob = possibs.get(position);
+                if (prob == null) {continue;}
+
+                if (rand <= prob) {
+                    this.positions.add(position);
+                    counter++;
+                }
+
+            }
+//            for (Map.Entry<Vector2d,Double> entry : possibs.entrySet()) {
+//                if (counter == N) {break;}
+//                double rand = Math.random();
+//                if (rand <= entry.getValue()) {
+//                    this.positions.add(entry.getKey());
+//                    counter++;
+//                }
+//            }
         }
 
 
@@ -103,8 +124,8 @@ public class RandomPositionGenerator implements Iterable {
 
     private double gauss(double x) {
 
-        double multiplier = 0.9*maxHeight;
-        double maxFuncHeight = 1;
+        double multiplier = 0.66 * maxHeight;
+        double maxFuncHeight = 0.8;
         return maxFuncHeight * Math.exp(-(multiplier*x*x));
 
     }

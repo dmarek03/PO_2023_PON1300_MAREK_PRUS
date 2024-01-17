@@ -37,12 +37,16 @@ public class Statistics {
 
     private int numberOfDescendants;
 
+    private List<Integer> mostPopularGenotype;
+
     // Trzeba jakoś dostać informację o pozycjach, na których jest wiekszę prawdopodobieństwo
     private List<Grass> GrassPreferPositions;
 
     private List<Animal> animalsWithTheMostPopularGenotype;
 
     private int dateOfDeath = 0;
+
+    private List<Animal> allAnimals = new ArrayList<>();
 
 
 
@@ -63,14 +67,14 @@ public class Statistics {
         }
     }
 
-    public Statistics(StandardMap map, List<Grass> grasses, ArrayList<Animal> animals){
-        this.grasses = grasses;
+    public Statistics(StandardMap map){
         this.map = map;
-        this.animals = animals;
+        this.grasses = map.getGrasses();
+        this.animals = map.getAnimals();
         this.numberOfAnimals = animals.size();
         this.numberOfGrasses = grasses.size();
         this.numberOfFreePositions = map.countFreePositions();
-
+        this.allAnimals = map.getAllEverLivedAnimals();
 
     }
 
@@ -85,10 +89,10 @@ public class Statistics {
 
     public double getAverageAnimalAge(){
         int totalAge = 0;
-        for(Animal a: animals){
+        for(Animal a: allAnimals){
             totalAge += a.getAge();
         }
-        return (double) totalAge  /animals.size();
+        return (double) totalAge  /allAnimals.size();
     }
 
 
@@ -130,7 +134,12 @@ public class Statistics {
             }
         }
 
-        for(Map.Entry< List<Integer>, Animal> entry : animalsWithGenotype.entrySet()){
+      
+        mostPopularGenotype = mostOftenGenotype;
+
+        for(Map.Entry<ArrayList<Integer>, Animal> entry : animalsWithGenotype.entrySet()){
+
+          
             if(entry.getKey() == mostOftenGenotype){
                 animalWithTheMostPopularGenotype.add(entry.getValue());
             }
@@ -143,19 +152,41 @@ public class Statistics {
         if (dateOfDeath == 0) {
             return "Animal is still alive";
         }
-        return "Date of death:"+dateOfDeath+'\n';
+        return "Date of death: "+dateOfDeath+'\n';
 
     }
 
     public String showAnimalStatistics(){
 
-        return ("Animal:%s\nThe genome of the animal:%s\nActive gen of genome:%d\n" +
-                "Energy of the animal:%d\nNumber of consumed grass:%d\nNumber of children:%d\n" +
-                "Number of descendants:%d\nAge:%d\n%s").formatted(animal, genes, activeGen, energy,
+        return ("Animal: %s\nThe genome of the animal: %s\nActive gen of genome: %d\n" +
+                "Energy of the animal: %d\nNumber of consumed grass: %d\nNumber of children: %d\n" +
+                "Number of descendants: %d\nAge: %d\n%s").formatted(animal, genes, activeGen, energy,
                 numberOfConsumedGrass, numberOfChildren, numberOfDescendants, age, animalDateOfDeath());
     }
 
     public List<Animal> getAnimalsWithTheMostPopularGenotype() {
         return animalsWithTheMostPopularGenotype;
     }
+
+    public static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        long factor = (long) Math.pow(10, places);
+        value = value * factor;
+        long tmp = Math.round(value);
+        return (double) tmp / factor;
+    }
+
+    public String showMapStats() {
+        String noAnimals = "Number of all animals on map: " + numberOfAnimals;
+        String noGrasses = "Number of all grasses on map: " + numberOfGrasses;
+        String noFreePos = "Number of free positions on map: " + numberOfFreePositions;
+        findAnimalsWithTheMostPopularGenotype();
+        String theMostPopularGenotype = "Most popular genotype: " + mostPopularGenotype;
+        String avgEnergy = "Average animal energy: " + round(getAverageAnimalEnergy(),2);
+        String avgLifespan = "Average animal lifespan: " + round(getAverageAnimalAge(),2);
+        String avgChildren = "Average children number: " + round(getAverageNumberOfChild(),2);
+        return noAnimals + "\n" + noGrasses + "\n" + noFreePos + "\n" + theMostPopularGenotype + "\n" + avgEnergy  + "\n" + avgLifespan + "\n" + avgChildren;
+    }
+
 }

@@ -1,6 +1,7 @@
 package agh.ics.oop.presenter;
 
 import agh.ics.oop.Simulation;
+import agh.ics.oop.Statistics;
 import agh.ics.oop.model.*;
 import agh.ics.oop.view.WorldElementBox;
 import javafx.animation.KeyFrame;
@@ -8,6 +9,8 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -35,7 +38,17 @@ public class SimulationPresenter implements MapChangeListener {
     private GridPane mapGrid;
 
     @FXML
-    private Button StopStartSimulationButton;
+    private Button startButton;
+
+    @FXML
+    private Button stopButton;
+
+    @FXML
+    private Label animalstatInfo;
+
+    @FXML
+    private Label mapStatInfo;
+
 
     private WorldMap map;
 
@@ -50,6 +63,30 @@ public class SimulationPresenter implements MapChangeListener {
         this.map = map;
     }
 
+    private int cellWidth = 0;
+    private int cellHeight = 0;
+
+    private Animal observedAnimal = null;
+
+    public void setMeasures(Vector2d measures) {
+
+        int sceneWidth = measures.getX();
+        int sceneHeight = measures.getY();
+
+        Boundary bounds = map.getCurrentBounds();
+
+        int horCells = Math.abs(bounds.upperright().getX() - bounds.lowerleft().getX()) + 2;
+        System.out.println(horCells);
+        int vertCells = Math.abs(bounds.upperright().getY() - bounds.lowerleft().getY()) + 2;
+        this.cellWidth = Math.min(((sceneWidth) / (horCells)),((sceneHeight) / (vertCells)));
+        this.cellHeight = Math.min(((sceneWidth) / (horCells)),((sceneHeight) / (vertCells)));
+
+        System.out.println("Measures Initialized " + cellWidth + " " + cellHeight);
+
+    }
+
+
+
     private void clearGrid() {
         if (mapGrid.getChildren() != null && !mapGrid.getChildren().isEmpty()) {
             mapGrid.getChildren().retainAll(mapGrid.getChildren().get(0));
@@ -58,19 +95,16 @@ public class SimulationPresenter implements MapChangeListener {
         mapGrid.getRowConstraints().clear();
     }
 
-    private Button createButton(String path,int x, int y) {
-        Button button = new Button();
+    private Canvas createCanvas(String path, int x, int y) {
+        Canvas canvas = new Canvas(cellWidth, cellHeight);
+        GraphicsContext gc = canvas.getGraphicsContext2D();
 
         Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream(path)));
-        ImageView imageView = new ImageView(image);
-        imageView.setFitWidth(50);
-        imageView.setFitHeight(50);
+        gc.drawImage(image, 0, 0, cellWidth, cellHeight);
 
-        button.setGraphic(imageView);
-        button.setStyle("-fx-background-color: transparent;");
-        button.setMaxSize(50, 50);
-        button.setOnAction(e -> animalButtonPressed(x, y));
-        return button;
+        canvas.setOnMouseClicked(e -> animalButtonPressed(x, y));
+
+        return canvas;
     }
 
     private Label createLabel(int minWidth, int minHeight, String text) {
@@ -89,8 +123,10 @@ public class SimulationPresenter implements MapChangeListener {
             Vector2d lowerleft = bounds.lowerleft();
             Vector2d upperright = bounds.upperright().add(new Vector2d(1,1));
 
-            int height = 50;
-            int width = 50;
+            System.out.println("IN DRAW: " + cellHeight + " " + cellWidth);
+
+            int height = cellHeight;
+            int width = cellWidth;
 
             for (int i = lowerleft.getX(); i < upperright.getX(); i++) {
                 mapGrid.getColumnConstraints().add(new ColumnConstraints(width));
@@ -118,8 +154,8 @@ public class SimulationPresenter implements MapChangeListener {
             for (int i = lowerleft.getX(); i < upperright.getX(); i++) {
                 for (int j = lowerleft.getY(); j < upperright.getY(); j++) {
 
-                    Button currButton = createButton("/ground.png",i,j);
-                    mapGrid.add(currButton, i - lowerleft.getX() + 1, upperright.getY() - j);
+                    Canvas canvas = createCanvas("/ground.png", i, j);
+                    mapGrid.add(canvas, i - lowerleft.getX() + 1, upperright.getY() - j);
 
                     Vector2d position = new Vector2d(i, j);
 
@@ -133,8 +169,8 @@ public class SimulationPresenter implements MapChangeListener {
                         continue;
                     }
 
-                    currButton = createButton(element.path(),i,j);
-                    mapGrid.add(currButton, i - lowerleft.getX() + 1, upperright.getY() - j);
+                    canvas = createCanvas(element.path(), i, j);
+                    mapGrid.add(canvas, i - lowerleft.getX() + 1, upperright.getY() - j);
 
                 }
             }
@@ -157,7 +193,16 @@ public class SimulationPresenter implements MapChangeListener {
                 Timeline timeline = new Timeline(new KeyFrame(Duration.millis(500), event -> {}));
                 timeline.play();
             });
-            System.out.println(message);
+            return;
+        }
+
+        if (Objects.equals(vector, "Animal")) {
+            Platform.runLater(() -> {
+                updateAnimalInfo();
+
+                Timeline timeline = new Timeline(new KeyFrame(Duration.millis(500), event -> {}));
+                timeline.play();
+            });
             return;
         }
 //        System.out.println(vector);
@@ -180,6 +225,18 @@ public class SimulationPresenter implements MapChangeListener {
             Timeline timeline = new Timeline(new KeyFrame(Duration.millis(500), event -> {}));
             timeline.play();
         });
+
+        Platform.runLater(() -> {
+            Statistics stat = new Statistics((StandardMap) map);
+            mapStatInfo.setText(stat.showMapStats());
+
+            Timeline timeline = new Timeline(new KeyFrame(Duration.millis(500), event -> {}));
+            timeline.play();
+        });
+
+
+
+
     }
 
     private void updatePosition(int i, int j) {
@@ -198,34 +255,55 @@ public class SimulationPresenter implements MapChangeListener {
         } else if (map.isOccupiedByGrass(position)) {
             element = map.grassAt(position);
         } else {
+            Canvas canvas = createCanvas("/ground.png", i, j);
+            mapGrid.add(canvas, i - lowerleft.getX() + 1, upperright.getY() - j);
 
-            Button currButton = createButton("/ground.png",i,j);
-            mapGrid.add(currButton, i - lowerleft.getX() + 1, upperright.getY() - j);
+
+//            Button currButton = createButton("/ground.png",i,j);
+//            mapGrid.add(currButton, i - lowerleft.getX() + 1, upperright.getY() - j);
             return;
         }
-
-        Button currButton = createButton(element.path(),i,j);
-        mapGrid.add(currButton, i - lowerleft.getX() + 1, upperright.getY() - j);
+        Canvas canvas = createCanvas(element.path(), i, j);
+        mapGrid.add(canvas, i - lowerleft.getX() + 1, upperright.getY() - j);
 
 
     }
-    @FXML
-    public void stopStartSimulation() {
-        if (isRunning) {
-            StopStartSimulationButton.setText("Start");
-            sim.stop();
-        } else {
-            StopStartSimulationButton.setText("Stop");
-            sim.resume();
-        }
 
-        isRunning = !isRunning;
+
+    public void onStartSimulationButtonClicked() {
+        sim.startSimulation();
+    }
+
+    public void onStopSimulationButtonClicked() {
+        sim.stopSimulation();
+    }
+
+    public void onSaveStatsButtonClicked() {
+        System.out.println("Here will be saving stats");
     }
 
 
     public void animalButtonPressed(int x, int y) {
         System.out.println(x + " " + y);
+        Vector2d position = new Vector2d(x,y);
+        if (!map.isOccupiedByAnimal(position)) {return;}
+        Animal animal = map.strongestAnimalAt(position);
+        this.observedAnimal = animal;
+
+        Statistics stat = new Statistics(observedAnimal);
+
+        animalstatInfo.setText(stat.showAnimalStatistics());
+
     }
+
+    public void updateAnimalInfo() {
+        if (this.observedAnimal == null) {return;}
+        Statistics stat = new Statistics(observedAnimal);
+
+        animalstatInfo.setText(stat.showAnimalStatistics());
+    }
+
+
 
 
 

@@ -24,7 +24,7 @@ public class Statistics {
     private int numberOfGrasses;
 
     private int numberOfFreePositions;
-    private ArrayList<Integer> genes;
+    private List<Integer> genes;
 
     private int activeGen;
     private int age;
@@ -40,7 +40,7 @@ public class Statistics {
     private List<Integer> mostPopularGenotype;
 
     // Trzeba jakoś dostać informację o pozycjach, na których jest wiekszę prawdopodobieństwo
-    private ArrayList<Grass> GrassPreferPositions;
+    private List<Grass> GrassPreferPositions;
 
     private List<Animal> animalsWithTheMostPopularGenotype;
 
@@ -110,8 +110,8 @@ public class Statistics {
 
 
     public List<Animal> findAnimalsWithTheMostPopularGenotype(){
-        Map<ArrayList<Integer>, Animal> animalsWithGenotype = new HashMap<>();
-        Map<ArrayList<Integer>, Integer> genotypeCounter = new HashMap<>();
+        Map<List<Integer>, Animal> animalsWithGenotype = new HashMap<>();
+        Map<List<Integer>, Integer> genotypeCounter = new HashMap<>();
         List<Animal> animalWithTheMostPopularGenotype = new ArrayList<>();
 
 
@@ -119,14 +119,14 @@ public class Statistics {
             animalsWithGenotype.put(animal.getGenotype().getGenes(), animal);
         }
 
-        for(ArrayList<Integer> genotype : animalsWithGenotype.keySet()){
+        for(List<Integer> genotype : animalsWithGenotype.keySet()){
             genotypeCounter.put(genotype, genotypeCounter.getOrDefault(genotype,0 ) + 1);
         }
 
         int MaxOccurrence = 0;
         List<Integer> mostOftenGenotype = new ArrayList<>();
 
-        for(Map.Entry<ArrayList<Integer>, Integer> entry :genotypeCounter .entrySet()){
+        for(Map.Entry<List<Integer>, Integer> entry :genotypeCounter .entrySet()){
             int currentOccurrence = entry.getValue();
             if(currentOccurrence > MaxOccurrence){
                 MaxOccurrence = currentOccurrence;
@@ -134,9 +134,12 @@ public class Statistics {
             }
         }
 
+      
         mostPopularGenotype = mostOftenGenotype;
 
         for(Map.Entry<ArrayList<Integer>, Animal> entry : animalsWithGenotype.entrySet()){
+
+          
             if(entry.getKey() == mostOftenGenotype){
                 animalWithTheMostPopularGenotype.add(entry.getValue());
             }

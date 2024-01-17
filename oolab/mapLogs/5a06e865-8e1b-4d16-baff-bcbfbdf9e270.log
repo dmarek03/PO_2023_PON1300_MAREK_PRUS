@@ -1,0 +1,23 @@
+Number of all animals on map: 3
+Number of all grasses on map: 32
+Number of free positions on map: 65
+Most popular genotype: [3, 6, 0, 5, 6, 6, 1, 4, 5, 2]
+Average animal energy: 9.33
+Average animal lifespan: 2.0
+Average children number: 0.0
+
+====================
+
+Animal: 4834176d-8e2f-43f4-b1d2-b2bb8fd90676
+The genome of the animal: [3, 6, 0, 5, 6, 6, 1, 4, 5, 2]
+Active gen of genome: 1
+Energy of the animal: 16
+Number of consumed grass: 1
+Number of children: 0
+Number of descendants: 0
+Age: 2
+Animal is still alive
+
+====================
+
+

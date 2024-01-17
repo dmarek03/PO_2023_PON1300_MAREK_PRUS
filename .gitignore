@@ -80,4 +80,3 @@ fabric.properties
 # Garbage
 .oolab/java_pid7684.hprof
 *.hprof
-*.log

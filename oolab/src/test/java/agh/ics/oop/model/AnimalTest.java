@@ -1,6 +1,8 @@
 package agh.ics.oop.model;
 import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 public class AnimalTest {
 
@@ -61,8 +63,8 @@ public class AnimalTest {
 
     @Test
     public void areAnimalsCopulateCorrectly(){
-        ArrayList<Integer> fatherGenome = new ArrayList<>();
-        ArrayList<Integer> motherGenome = new ArrayList<>();
+        List<Integer> fatherGenome = new ArrayList<>();
+        List<Integer> motherGenome = new ArrayList<>();
         for(int i=0;i<10;i++){
             fatherGenome.add(i%8);
             motherGenome.add((i+1)%8);
@@ -78,7 +80,7 @@ public class AnimalTest {
         int expectedChildEnergy = 7;
         int expectedFatherEnergy = 11;
         int expectedMotherEnergy = 7;
-        ArrayList<Animal> expectedParents = new ArrayList<>();
+        List<Animal> expectedParents = new ArrayList<>();
         expectedParents.add(father);
         expectedParents.add(mother);
         assertEquals(expectedFatherEnergy, father.getAnimalEnergy());

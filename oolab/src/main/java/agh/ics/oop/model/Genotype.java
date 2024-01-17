@@ -1,11 +1,12 @@
 package agh.ics.oop.model;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class Genotype {
 
-    public ArrayList<Integer> genes;
+    public List<Integer> genes;
     private final int genesRange;
 
     private final int numberOfGenes;
@@ -17,21 +18,21 @@ public class Genotype {
         genes = getRandomGenotype();
     }
 
-    public Genotype(ArrayList<Integer> newGenes){
+    public Genotype(List<Integer> newGenes){
         this.genesRange = 7;
         this.numberOfGenes = newGenes.size();
         this.genes = newGenes;
 //        System.out.println("Assigned numberOfGenes as " + numberOfGenes + " and should " + newGenes.size());
     }
 
-    public Genotype(int genesRange, int numberOfGenes, ArrayList<Integer> newGenes){
+    public Genotype(int genesRange, int numberOfGenes, List<Integer> newGenes){
         this.genesRange = genesRange;
         this.numberOfGenes = numberOfGenes;
         this.genes = newGenes;
     }
 
-    public ArrayList<Integer> getRandomGenotype(){
-        ArrayList<Integer> list = new ArrayList<>();
+    public List<Integer> getRandomGenotype(){
+        List<Integer> list = new ArrayList<>();
         for(int i =0;i< numberOfGenes;i++){
 //            list.add(getRandomNumber(genesRange));
             list.add((int)(Math.random()*genesRange));
@@ -59,7 +60,7 @@ public class Genotype {
 
     }
 
-    private void swap(ArrayList<Integer> array, int idx1, int idx2){
+    private void swap(List<Integer> array, int idx1, int idx2){
         int val1 = array.get(idx1);
         int val2  = array.get(idx2);
         array.remove(idx1);
@@ -77,7 +78,7 @@ public class Genotype {
         return genesRange;
     }
 
-    public ArrayList<Integer> getGenes(){
+    public List<Integer> getGenes(){
         return genes;
     }
 

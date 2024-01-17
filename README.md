@@ -2,6 +2,6 @@
 
 Zwierzęta :
 
-Dominik -> Bolas
+Dominik Marek -> Bolas
 
-Paweł -> Misiomysz
+Paweł Prus -> Misiomysz

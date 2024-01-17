@@ -51,8 +51,8 @@ public class Genotype {
     }
 
     public void genesSubstitution(){
-        int idx1 = getRandomNumber(numberOfGenes);
-        int idx2 = getRandomNumber(numberOfGenes);
+        int idx1 = getRandomNumber(numberOfGenes - 1);
+        int idx2 = getRandomNumber(numberOfGenes - 1);
         swap(genes, idx1, idx2);
 
     }
@@ -67,7 +67,7 @@ public class Genotype {
     }
 
     private int getRandomNumber(int range){
-        return (int)(Math.random()*range);
+        return (int)(Math.random()*(range));
 
     }
 

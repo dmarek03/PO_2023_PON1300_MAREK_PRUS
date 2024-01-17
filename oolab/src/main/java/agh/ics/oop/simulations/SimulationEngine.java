@@ -8,21 +8,22 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class SimulationEngine implements Runnable {
-    private  final List<Simulation> simulations;
+//    private  final List<Simulation> simulations;
 
+    private List<Thread> threads = new ArrayList<>();
 
-    public SimulationEngine(List<Simulation> simulations) {
-
-        this.simulations = simulations;
-
+    public void addThread(Thread thread) {
+        this.threads.add(thread);
+        runAsyncInThreadPool();
     }
 
 
+
     public void runAsync(){
-        List<Thread> threads = new ArrayList<>();
-        for(Simulation sim : simulations){
-            threads.add(new Thread(sim));
-        }
+//        List<Thread> threads = new ArrayList<>();
+//        for(Simulation sim : simulations){
+//            threads.add(new Thread(sim));
+//        }
         for(Thread t : threads){
             t.start();
 
@@ -44,8 +45,8 @@ public class SimulationEngine implements Runnable {
 
     public void runAsyncInThreadPool(){
         ExecutorService executorService = Executors.newFixedThreadPool(4);
-        for (Simulation sim : simulations) {
-            executorService.submit(sim);
+        for (Thread thread: threads) {
+            executorService.submit(thread);
         }
 
 
@@ -54,6 +55,6 @@ public class SimulationEngine implements Runnable {
 
     @Override
     public void run() {
-        runAsync();
+        runAsyncInThreadPool();
     }
 }

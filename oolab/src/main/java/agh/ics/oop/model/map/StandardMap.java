@@ -441,7 +441,9 @@ public class StandardMap implements WorldMap {
             Animal curr = dead.removeFirst();
             getAnimals().remove(curr);
             removeAnimalBool(curr);
-            removeFromFertilized(curr.getPosition());
+            if (lifegivingCorpses) {
+                removeFromFertilized(curr.getPosition());
+            }
 
             int count = 0;
             if (lifegivingCorpses) {
@@ -459,7 +461,6 @@ public class StandardMap implements WorldMap {
                     curr = dead.removeFirst();
                     getAnimals().remove(curr);
                     removeAnimalBool(curr);
-                    removeFromFertilized(curr.getPosition());
                     count += 1;
                 }
             }
@@ -482,7 +483,9 @@ public class StandardMap implements WorldMap {
         currentAnimal.incrementAge();
         if (currentAnimal.isDead()) {
             animals.remove(currentAnimal);
-            addToFertilized(currentAnimal.getPosition());
+            if (lifegivingCorpses) {
+                addToFertilized(currentAnimal.getPosition());
+            }
             dead.addLast(currentAnimal);
         }
     }

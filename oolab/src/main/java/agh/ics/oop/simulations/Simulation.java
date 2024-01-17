@@ -45,7 +45,7 @@ public class Simulation implements Runnable {
             this.swapMutation = true;
         }
         for (Vector2d position : positions) {
-            Animal animal = new Animal(position, MapDirection.NORTH,animalEnergy,geneLength,this.swapMutation);
+            Animal animal = new Animal(position, MapDirection.NORTH,animalEnergy,geneLength,this.swapMutation,copulateEnergy);
             animals.add(animal);
             map.place(animal, true);
         }

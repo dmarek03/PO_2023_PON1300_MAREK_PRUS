@@ -38,8 +38,18 @@ public class Grass implements WorldElement {
     }
 
     @Override
-    public String secondaryPath() {
+    public String healthPath() {
         return path();
+    }
+
+    @Override
+    public String ASCII() {
+        return "*";
+    }
+
+    @Override
+    public String color() {
+        return "#0B4300";
     }
 
 }

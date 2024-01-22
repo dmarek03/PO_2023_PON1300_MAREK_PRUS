@@ -375,6 +375,7 @@ public class StandardMap implements WorldMap {
         return height;
     }
 
+
     public void setGrasses(List<Grass> newGrasses) {
         this.grasses = newGrasses;
     }
@@ -408,32 +409,57 @@ public class StandardMap implements WorldMap {
         return this.preferred;
     }
 
+    List<Animal> copyAnimals = animals;
+
 
     private int stage = 0;
+
+    private int nowMoved = 0;
+
     public void updateAll() {
-        List<Animal> copyAnimals = animals;
         int maxStage = 4 + animals.size();
         if (stage == 0) {
             deadRemoval();
             stage++;
-        } else if (stage == maxStage - 3) {
+        } else if (stage == 2) {
             eatingAndCopulating();
             stage++;
-        } else if (stage == maxStage - 2) {
+        } else if (stage == 3) {
             setGrasses(updateGrass());
             stage++;
-        } else if (stage == maxStage - 1) {
+        } else if (stage == 4) {
             day++;
             mapChanged("Day " + day);
             stage = 0;
-        } else {
+        } else if (stage == 1) {
+
             Animal mover = copyAnimals.get(0);
             copyAnimals.remove(0);
             if (!mover.isDead()) {
                 moveAnimal(mover);
             }
-            stage++;
+
+            nowMoved += 1;
+
+            if (nowMoved == noAliveAnimals()) {
+                nowMoved = 0;
+                stage++;
+                copyAnimals = animals;
+                return;
+            }
+
         }
+
+
+
+    }
+
+    private int noAliveAnimals() {
+        int counter = 0;
+        for (Animal animal : animals) {
+            if (!animal.isDead()) {counter++;}
+        }
+        return counter;
     }
 
     private void deadRemoval() {
@@ -481,7 +507,9 @@ public class StandardMap implements WorldMap {
         int move = genes.get(moveInd);
         move(currentAnimal,move);
         currentAnimal.incrementAge();
+        currentAnimal.setAge(Math.min(currentAnimal.getAge(), day + 1));
         if (currentAnimal.isDead()) {
+            currentAnimal.setDeathDate(day + 1);
             animals.remove(currentAnimal);
             if (lifegivingCorpses) {
                 addToFertilized(currentAnimal.getPosition());
